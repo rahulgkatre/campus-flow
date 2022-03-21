@@ -2,8 +2,9 @@
   "name": "campus-flow-site",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://cx4230-sp22-group1.github.io/campus-flow",
+  "homepage": "http://cx4230-sp22-group1.github.io/campus-flow/",
   "dependencies": {
+    "@tailwindcss/aspect-ratio": "^0.2.1",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.4",
     "@testing-library/user-event": "^13.5.0",
@@ -11,20 +12,29 @@
     "@types/node": "^16.11.26",
     "@types/react": "^17.0.40",
     "@types/react-dom": "^17.0.13",
+    "@types/react-helmet": "^6.1.5",
+    "@types/react-router-dom": "^5.3.3",
+    "postcss": "^8.3.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-helmet": "^6.1.0",
     "react-p5-wrapper": "^3.2.1",
+    "react-router-dom": "^6.2.2",
     "react-scripts": "5.0.0",
+    "tailwindcss": "^2.2.7",
     "typescript": "^4.6.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "start": "concurrently --restart-tries 5 --names \"  CSS,REACT\" \"npm run watch:css\" \"react-scripts start\"",
+    "build": "npm run build:css && react-scripts build",
+    "postbuild": "ncp build\\index.html build\\404.html",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:css": "postcss src/assets/styles/tailwind.css -o src/assets/styles/index.css",
+    "watch:css": "nodemon --watch src/assets/styles --watch tailwind.config.js --ignore src/assets/styles/index.css --ext scss,css --exec \"postcss src/assets/styles/tailwind.css -o src/assets/styles/index.css\"",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -45,6 +55,12 @@
     ]
   },
   "devDependencies": {
-    "gh-pages": "^3.2.3"
+    "concurrently": "^5.3.0",
+    "gh-pages": "^3.2.3",
+    "ncp": "^2.0.0",
+    "nodemon": "^2.0.6",
+    "postcss-cli": "^8.3.0",
+    "postcss-import": "^13.0.0",
+    "postcss-preset-env": "^6.7.0"
   }
 }
