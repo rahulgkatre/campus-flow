@@ -2,7 +2,7 @@
   "name": "campus-flow-site",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://cx4230-sp22-group1.github.io/campus-flow/",
+  "homepage": "https://github.gatech.edu/pages/cx4230-sp22-group1/campus-flow/",
   "dependencies": {
     "@tailwindcss/aspect-ratio": "^0.2.1",
     "@testing-library/jest-dom": "^5.16.2",

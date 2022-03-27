@@ -29,6 +29,9 @@ export function sketch(p5: P5Instance) {
     particles.length = 0;
     edges.length = 0;
 
+    coc.mult(0).add(randomPos());
+    culc.mult(0).add(randomPos());
+
     for (let i = 0; i < NUM_PARTICLES; i++) {
       particles.push(new Particle(randomPos(),p5.random() < 0.5 ? coc : culc));
       //console.log(particles[i].position);
