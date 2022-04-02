@@ -15,11 +15,13 @@ export class Particle {
     this.accel = p5.createVector(0,0);
   }
   resetAccel() {
-    this.accel.mult(0);
+    this.accel.mult(0.95);
     const goalPos = this.goal.closestPosition(this);
     if (this.position.dist(goalPos) > 20) {
       const toGoal = Vector.sub(goalPos,this.position).normalize();
-      this.accel.add(toGoal.mult(1));
+      this.accel.add(toGoal.mult(2));
+    } else {
+      this.accel.mult(0.2);
     }
   }
   avoidOther(otherParticle: Particle) {
@@ -33,7 +35,8 @@ export class Particle {
   }
   update() {
     this.velocity.add(this.accel);
-    this.velocity.normalize().mult(2);
+    this.velocity.limit(5);
+    // this.velocity.normalize().mult(2);
     this.position.add(this.velocity);  
   }
   draw() {
