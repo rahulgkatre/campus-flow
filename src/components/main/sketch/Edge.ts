@@ -38,6 +38,6 @@ export class Edge {
       return;
     }
     const push = Vector.sub(midpoint, particle.position).mult(-1).normalize().mult(this.repulsion / dist);
-    particle.addForce(push);
+    particle.applyForce(push);
   }
 }
