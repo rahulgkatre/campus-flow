@@ -20,7 +20,7 @@ export function sketch(p5: P5Instance) {
   const goals: Goal[] = [];
   const vectorField: VectorField = new VectorField(fieldDescriptor);
 
-  const NUM_PARTICLES = 100;
+  const NUM_PARTICLES = 0;
 
   let resetCounter = 0;
 
@@ -74,7 +74,7 @@ export function sketch(p5: P5Instance) {
   function drawBackground() {
     p5.background(0);
     p5.image(mapImage, 0, 0);
-    vectorField.draw();
+    // vectorField.draw();
   }
 
   p5.mousePressed = () => {
