@@ -26,8 +26,8 @@ export class Particle {
   }
   avoidOther(otherParticle: Particle) {
     if (this.position.dist(otherParticle.position) < 10) {
-      const awayVec = Vector.sub(this.position,otherParticle.position).normalize();
-      this.accel.add(awayVec.mult(10));
+      const awayVec = Vector.sub(this.position,otherParticle.position);
+      this.accel.add(Vector.normalize(awayVec).mult(10));
     }
   }
   applyForce(force: Vector) {

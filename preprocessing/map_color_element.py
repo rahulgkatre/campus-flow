@@ -1,8 +1,10 @@
 import numpy as np
 from skimage.filters import gaussian
 
+from utils import crop, display_image, get_color_mask
+
 class MapColorElement:
-    def __init__(self, name, color, blurSigma, forceToEnter, forceToLeave):
+    def __init__(self, name, color,*args,blurSigma,forceToEnter,forceToLeave):
         self.name = name
         self.color = color
         self.blurSigma = blurSigma
@@ -33,9 +35,9 @@ def getTotalField(elements, image):
     return vecField
 
 MAP_ELEMENTS = [
-    MapColorElement('path', path, 4, 1, -1),
-    MapColorElement('grass', grass, 4, 1, 1),
-    MapColorElement('obstacle', obstacle, 4, -2, 0),
-    MapColorElement('red', red, 16, 1, 1),
-    MapColorElement('blue', blue, 16, 1, 1)
+    MapColorElement('path', np.array([127, 127, 127]), 4, 1, -1),
+    MapColorElement('grass', np.array([34, 177, 76]), 4, 1, 1),
+    MapColorElement('obstacle', np.array([255, 255, 255]), 4, -2, 0),
+    MapColorElement('red', np.array([237, 28, 36]), 16, 1, 1),
+    MapColorElement('blue', np.array([63, 72, 204]), 16, 1, 1)
 ]

@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
 def crop(data, center, lim):
     return data[center[1]-lim:center[1]+lim, center[0]-lim:center[0]+lim]
 

@@ -5,7 +5,6 @@ import { Particle } from './Particle';
 export class VectorField {
   readonly field: Vector[][];
   readonly repulsion: number;
-  
 
   constructor(fieldDescriptor: string) {
     this.repulsion = 1;
