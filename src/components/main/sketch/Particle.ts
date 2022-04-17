@@ -1,8 +1,13 @@
-import { Color, Vector } from 'p5';
+import { Vector } from 'p5';
 import { Goal } from './Goal';
 import { p5 } from './sketch';
 
 export class Particle {
+  static readonly maxSpeed = 2;
+  static readonly accelReduction = 0.25;
+  static readonly goalAttractionForce = 0.0;
+  static readonly goalReachedFriction = 0.0;
+
   readonly goal: Goal;
   readonly position: Vector;
   velocity: Vector;
@@ -15,13 +20,13 @@ export class Particle {
     this.accel = p5.createVector(0,0);
   }
   resetAccel() {
-    this.accel.mult(0.75);
+    this.accel.mult(Particle.accelReduction);
     const goalPos = this.goal.closestPosition(this);
     if (this.position.dist(goalPos) > 20) {
       const toGoal = Vector.sub(goalPos,this.position).normalize();
-      this.accel.add(toGoal.mult(0.000005));
+      this.accel.add(toGoal.mult(Particle.goalAttractionForce));
     } else {
-      // this.accel.mult(0.0);
+      this.accel.mult(1 - Particle.goalReachedFriction);
     }
   }
   avoidOther(otherParticle: Particle) {
@@ -36,7 +41,7 @@ export class Particle {
   update() {
     this.accel.limit(0.1);
     this.velocity.add(this.accel);
-    this.velocity.limit(1);
+    this.velocity.limit(Particle.maxSpeed);
     // this.velocity.normalize().mult(2);
     this.position.add(this.velocity);  
   }

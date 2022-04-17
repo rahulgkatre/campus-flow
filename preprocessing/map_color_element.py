@@ -4,11 +4,14 @@ from skimage.filters import gaussian
 from utils import crop, display_image, get_color_mask
 
 class MapColorElement:
-    def __init__(self, name, color,*args,blurSigma,forceToEnter,forceToLeave):
+    def __init__(self, name, color,*args,externalBlurSigma,forceToEnter,internalBlurSigma=None,forceToLeave):
         self.name = name
         self.color = color
-        self.blurSigma = blurSigma
+        self.externalBlurSigma = externalBlurSigma
         self.forceToEnter = forceToEnter
+        if internalBlurSigma is None:
+            internalBlurSigma = externalBlurSigma
+        self.internalBlurSigma = internalBlurSigma
         self.forceToLeave = forceToLeave
     
     def get_vector_field(self, image):
@@ -17,7 +20,13 @@ class MapColorElement:
         This lets us calculate the vector field for a specific environment object (e.g. obstacle)
         '''
         color_mask = get_color_mask(self.color, image)
-        dy, dx = np.gradient(gaussian(color_mask.astype(float), sigma=self.blurSigma))
+        # blur the outside and inside separately
+        dy_ext, dx_ext = np.gradient(gaussian(color_mask.astype(float), sigma=self.externalBlurSigma))
+        dy_int, dx_int = np.gradient(gaussian(color_mask.astype(float), sigma=self.internalBlurSigma))
+
+        # combine the two blurs for internal/external
+        dy = np.where(~color_mask, dy_ext, dy_int)
+        dx = np.where(~color_mask, dx_ext, dx_int)
 
         # Force to enter is already negative (we don't want to enter an obstacle) 
         # but we negate it again to make positive so that the gradient field points away stronger
@@ -42,9 +51,9 @@ For example, the aversion to walk on grass is much less than the aversion to wal
 Similarly, there is an attraction to walk on a path rather than on the road.
 '''
 MAP_ELEMENTS = [
-    MapColorElement('path', np.array([127, 127, 127]), blurSigma=4, forceToEnter=1, forceToLeave=-1),
-    MapColorElement('grass', np.array([34, 177, 76]), blurSigma=4, forceToEnter=1, forceToLeave=1),
-    MapColorElement('obstacle', np.array([255, 255, 255]), blurSigma=16, forceToEnter=-2, forceToLeave=0)
+    MapColorElement('path', np.array([127, 127, 127]), externalBlurSigma=4, forceToEnter=1, internalBlurSigma=16, forceToLeave=-1),
+    MapColorElement('grass', np.array([34, 177, 76]), externalBlurSigma=4, forceToEnter=1, forceToLeave=1),
+    MapColorElement('obstacle', np.array([255, 255, 255]), externalBlurSigma=8, forceToEnter=-8, forceToLeave=0)
     # MapColorElement('red', np.array([237, 28, 36]), blurSigma=16, forceToEnter=1, forceToLeave=1),
     # MapColorElement('blue', np.array([63, 72, 204]), blurSigma=16, forceToEnter=1, forceToLeave=1)
 ]
