@@ -45,13 +45,18 @@ def normalize_field(field):
     '''
     Max-normalize the field based on magnitude of vec
     '''
-
     # divide each vector by max of magnitude of any vector
     magnitude = np.linalg.norm(field, axis=2)
     field = field / np.max(magnitude)
 
     return field
 
+def add_noise(field, noise_level=10):
+    '''
+    Add noise to the vector field
+    '''
+    field += np.random.normal(0, noise_level, field.shape)
+    return field
 
 def crop(data, center, lim):
     return data[center[1]-lim:center[1]+lim, center[0]-lim:center[0]+lim]

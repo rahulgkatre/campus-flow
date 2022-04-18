@@ -7,7 +7,7 @@ export class VectorField {
   readonly repulsion: number;
 
   constructor(fieldDescriptor: string) {
-    this.repulsion = 0.5;
+    this.repulsion = 1.0;
     this.field = [];
     const lines = fieldDescriptor.split('\n');
     for (let i = 0; i < lines.length; i++) {
