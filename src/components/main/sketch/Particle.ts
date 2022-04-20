@@ -5,113 +5,131 @@ import { VectorField } from './VectorField';
 
 export class Particle {
   static readonly maxSpeed = 1;
-  static readonly accelReduction = 0.75;
-  static readonly goalAttractionForce = 0.005;
-  static readonly goalReachedFriction = 1.0;
-  static readonly MOVING_AVG_SIZE = 10;
-  static readonly GOAL_REACHED_DIST = 20;
+  static readonly RESISTANCE_TO_TURN = 0.1;
+  static readonly MOVING_AVG_SIZE = 20;
+  static readonly GOAL_REACHED_DIST = 10;
 
   readonly goal: Goal;
   readonly position: Vector;
-  velocity: Vector;
-  accel: Vector;
-  lastHighVelocity: Vector;
-  highCount: number;
   goalPos: Vector;
-  movingAvgGoalDists: number[];
+  readonly heading: Vector;
+
+  avgOtherParticle: Vector;
+  otherParticleCount: number;
+
+  movingAvgPositions: Vector[];
+  movingAvgHeadings: Vector[];
   movingAvgIndex: number;
-  movingAvgLength: number;
-  // movingAvgDistToGoal: number;
+  framesSameGoal: number;
 
   constructor(pos: Vector, goal: Goal) {
     this.goal = goal;
     this.position = pos;
-    this.velocity = p5.createVector(0,0);
-    this.accel = p5.createVector(0,0);
-    this.lastHighVelocity = p5.createVector(0,0);
-    this.highCount = 0;
     this.goalPos = goal.closestPosition(this);
-    this.movingAvgGoalDists = [];
+    this.heading = Vector.sub(this.goalPos, this.position).normalize();
+    this.avgOtherParticle = new Vector(0, 0);
+    this.otherParticleCount = 0;
+    this.movingAvgPositions = [];
+    this.movingAvgHeadings = [];
     this.movingAvgIndex = 0;
-    this.movingAvgLength = 0;
-    // this.movingAvgDistToGoal = 0;
-    this.resetMovingAvg();
+    this.framesSameGoal = 0;
+    this.resetMovingAvgPositions();
+    this.resetMovingAvgHeadings();
   }
-  resetMovingAvg() {
-    const goalDist = this.position.dist(this.goalPos);
-    this.movingAvgGoalDists = Array(Particle.MOVING_AVG_SIZE).fill(goalDist);
-    this.movingAvgLength = 0;
+  resetMovingAvgPositions() {
+    this.movingAvgPositions = Array(Particle.MOVING_AVG_SIZE);
+    this.framesSameGoal = 0;
+    for (let i = 0; i < Particle.MOVING_AVG_SIZE; i++) {
+      this.movingAvgPositions[i] = this.position.copy();
+    }
   }
-  evaluateForces(field: VectorField): boolean {
-    this.accel.mult(Particle.accelReduction);
+  resetMovingAvgHeadings() {
+    this.movingAvgHeadings = Array(Particle.MOVING_AVG_SIZE);
+    for (let i = 0; i < Particle.MOVING_AVG_SIZE; i++) {
+      this.movingAvgHeadings[i] = this.heading.copy();
+    }
+  }
+  evaluateForces(field: VectorField): boolean { // returns true if goal reached
     const distToGoal = this.position.dist(this.goalPos);
-    if (distToGoal > Particle.GOAL_REACHED_DIST) {
-      this.applyForce(field.forceAtPoint(this.position));
-      const toGoal = Vector.sub(this.goalPos,this.position).normalize();
-      const vec = field.forceAtPoint(Vector.add(this.position, toGoal.copy().setMag(this.velocity.mag()))).normalize().mult(0.5);
-      toGoal.add(vec);
-      this.accel.add(toGoal.mult(1/Particle.goalAttractionForce/distToGoal));
-      return false;
-    } else {
-      // this.accel.mult(1 - Particle.goalReachedFriction);
-      this.accel.set(this.velocity.copy().mult(-1));
+    if (distToGoal <= Particle.GOAL_REACHED_DIST) {
+      this.heading.mult(0);
       return true;
     }
+    const avoidOthersHeading = this.avgOtherParticle;//.normalize();
+    const fieldForce = field.getForce(this.position);
+    fieldForce.setMag(Math.pow(fieldForce.mag(), 0.75));
+    const toGoalHeading = Vector.sub(this.goalPos, this.position).normalize();
+    // const desiredHeading = Vector.add(toGoalHeading.mult(2/(fieldForce.mag()+0.00001)), avoidOthersHeading.mult(1)).normalize();
+    const fieldForceAtHeading = field.getForce(this.position.copy().add(toGoalHeading));
+    fieldForceAtHeading.setMag(Math.pow(fieldForceAtHeading.mag(), 0.75));
+    const fieldEffect = distToGoal > 100 ? 2 : (distToGoal > Particle.GOAL_REACHED_DIST*3 ? 1 : 0.5);
+    const desiredHeading = new Vector(0,0)
+        .add(toGoalHeading.mult(2/(fieldForce.mag()+0.00001)))
+        .normalize()
+        .add(avoidOthersHeading.mult(this.otherParticleCount*5))
+        .add(fieldForce.mult(fieldEffect))
+        .add(fieldForceAtHeading.mult(fieldEffect))
+        .normalize();
+    this.heading.mult(Particle.RESISTANCE_TO_TURN).add(desiredHeading.mult(1 - Particle.RESISTANCE_TO_TURN)).normalize();
+    return false;
+  }
+  resetOtherParticleAvoidance() {
+    this.avgOtherParticle = new Vector(0, 0);
+    this.otherParticleCount = 0;
   }
   avoidOther(otherParticle: Particle) {
-    if (this.position.dist(otherParticle.position) < 5) {
-      const awayVec = Vector.sub(this.position,otherParticle.position);
-      this.applyForce(awayVec.normalize().mult(5));
+    if (this.position.dist(otherParticle.position) < 10) {
+      const vec = Vector.sub(this.position, otherParticle.position);
+      this.avgOtherParticle.add(vec.div(vec.magSq()+0.00001));
+      this.otherParticleCount++;
     }
-  }
-  applyForce(force: Vector) {
-    this.accel.add(force);
   }
   update() {
-
-    // update moving avg
-    this.movingAvgGoalDists[this.movingAvgIndex] = this.position.dist(this.goal.closestPosition(this));
-    this.movingAvgIndex = (this.movingAvgIndex + 1) % Particle.MOVING_AVG_SIZE;
-    this.movingAvgLength++;
-
-    if (this.movingAvgGoalDists.reduce((a,b) => a + b) / Particle.MOVING_AVG_SIZE < this.position.dist(this.goalPos)) {
-      this.goalPos = this.goal.closestPosition(this);
-    }
-
-    if (this.movingAvgLength > Particle.MOVING_AVG_SIZE && Math.max(...this.movingAvgGoalDists) - Math.min(...this.movingAvgGoalDists) <= Particle.MOVING_AVG_SIZE / 2) { // try to move 0.5 units per frame
-      this.goalPos = this.goal.randomPosition();
-      this.resetMovingAvg();
-    }
-
-    // this.accel.limit(0.1);
-    this.velocity.add(this.accel.mult(1));
-    this.velocity.limit(Particle.maxSpeed);
-    // if (this.velocity.mag() < Particle.maxSpeed/3) {
-    //   this.velocity.set(this.lastHighVelocity).div(this.highCount);
+    // if (this.movingAvgGoalDists.reduce((a,b) => a + b) / Particle.MOVING_AVG_SIZE < this.position.dist(this.goalPos)) {
+    //   this.goalPos = this.goal.closestPosition(this);
     // }
-    // this.velocity.normalize().mult(2);
-    this.position.add(this.velocity);
-    if (this.velocity.mag() > Particle.maxSpeed/3) {
-      this.lastHighVelocity.add(this.velocity);
-      this.highCount++;
+
+    // const averagePos = this.movingAvgPositions.reduce((a,b) => Vector.add(a,b)).div(Particle.MOVING_AVG_SIZE);
+    // const headingsFromAvgPos = this.movingAvgPositions.map(p => Vector.sub(p, averagePos).heading());
+    // const headingAngles = this.movingAvgHeadings.map(h => {
+    //   const angle = h.heading();
+    //   return angle < 0 ? angle + Math.PI * 2 : angle;
+    // });
+    const avgHeading = this.movingAvgHeadings.reduce((a,b) => Vector.add(a,b)).div(Particle.MOVING_AVG_SIZE);
+    const stdDevHeading = Math.sqrt(this.movingAvgHeadings.map(h => Math.pow(h.angleBetween(avgHeading), 2)).reduce((a,b) => a + b) / Particle.MOVING_AVG_SIZE);
+    // const avgDistFromAvgPos = this.movingAvgPosition.map(p => p.dist(averagePos)).reduce((a,b) => a + b) / Particle.MOVING_AVG_SIZE;
+    // console.log(stdDevHeading);
+    if (this.framesSameGoal > Particle.MOVING_AVG_SIZE*3 && stdDevHeading >= p5.PI/3 && this.position.dist(this.goalPos) > Particle.GOAL_REACHED_DIST*3) { // try to move 0.5 units per frame
+      // console.log('std dev of heading: ' + stdDevHeading);
+      // console.log('avg: ' + avgHeading);
+      this.goalPos = this.goal.closestPosition(this, [this.goalPos]);
+      this.resetMovingAvgPositions();
+      // p5.noLoop();
     }
-    this.velocity.mult(0.2);
+
+    this.position.add(this.heading.copy().setMag(Particle.maxSpeed));
+    
+    // update moving avg
+    this.movingAvgPositions[this.movingAvgIndex] = this.position.copy();
+    this.movingAvgHeadings[this.movingAvgIndex] = this.heading.copy();
+    this.movingAvgIndex = (this.movingAvgIndex + 1) % Particle.MOVING_AVG_SIZE;
+    this.framesSameGoal++;
   }
   draw() {
     p5.noStroke();
     p5.fill(this.goal.color);
     p5.circle(this.position.x, this.position.y, 5);
     p5.stroke(this.goal.color);
-    const lookingAt = Vector.add(this.position, this.velocity.copy().normalize().mult(10));
+    const lookingAt = Vector.add(this.position, this.heading.mult(5));
     // draw an arrow from position to lookingAt
     p5.line(this.position.x, this.position.y, lookingAt.x, lookingAt.y);
-    p5.strokeWeight(2);
-    p5.line(lookingAt.x, lookingAt.y, lookingAt.x + (lookingAt.x - this.position.x) * 0.5, lookingAt.y + (lookingAt.y - this.position.y) * 0.5);
-    p5.line(lookingAt.x, lookingAt.y, lookingAt.x - (lookingAt.x - this.position.x) * 0.5, lookingAt.y - (lookingAt.y - this.position.y) * 0.5);
-    p5.strokeWeight(1);
-    if (this.position.dist(this.goalPos) <= Particle.GOAL_REACHED_DIST) {
-      p5.stroke([0,255,0]);
-    }
-    p5.line(this.position.x, this.position.y, this.goalPos.x, this.goalPos.y);
+    // p5.strokeWeight(2);
+    // p5.line(lookingAt.x, lookingAt.y, lookingAt.x + (lookingAt.x - this.position.x) * 0.5, lookingAt.y + (lookingAt.y - this.position.y) * 0.5);
+    // p5.line(lookingAt.x, lookingAt.y, lookingAt.x - (lookingAt.x - this.position.x) * 0.5, lookingAt.y - (lookingAt.y - this.position.y) * 0.5);
+    // p5.strokeWeight(1);
+    // if (this.position.dist(this.goalPos) <= Particle.GOAL_REACHED_DIST) {
+    //   p5.stroke([0,255,0]);
+    // }
+    // p5.line(this.position.x, this.position.y, this.goalPos.x, this.goalPos.y);
   }
 }

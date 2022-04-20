@@ -10,10 +10,13 @@ export class Goal {
     this.positions = posArr;
     this.color = color;
   }
-  closestPosition(particle: Particle) {
+  closestPosition(particle: Particle, exclude?: Vector[]): Vector {
     let minDist = Number.MAX_VALUE;
     let minIndex = 0;
     for (let i = 0; i < this.positions.length; i++) {
+      if (exclude && exclude.find(e => e.equals(this.positions[i]))) {
+        continue;
+      }
       const dist = particle.position.dist(this.positions[i]);
       if (dist < minDist) {
         minDist = dist;

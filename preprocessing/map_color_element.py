@@ -14,7 +14,7 @@ class MapColorElement:
         self.internalBlurSigma = internalBlurSigma
         self.forceToLeave = forceToLeave
     
-    def get_vector_field(self, image):
+    def get_vector_field(self, image, null_color_mask=None):
         '''
         Calculate gradient over a slightly blurred image for a specific color
         This lets us calculate the vector field for a specific environment object (e.g. obstacle)
@@ -23,6 +23,13 @@ class MapColorElement:
         # blur the outside and inside separately
         int_blur = gaussian(color_mask.astype(float), sigma=self.internalBlurSigma)
         ext_blur = gaussian(color_mask.astype(float), sigma=self.externalBlurSigma)
+
+        # zero out the field where a different color is present
+        if null_color_mask is not None:
+            invalid_regions = ~(color_mask | null_color_mask)
+            int_blur[invalid_regions] = 0
+            ext_blur[invalid_regions] = 0
+
 
         # compute gradients
         dy_ext, dx_ext = np.gradient(ext_blur)
@@ -47,26 +54,4 @@ class MapColorElement:
         dx *= -np.where(~color_mask, -self.forceToEnter, self.forceToLeave)
 
         return dy, dx, color_mask
-
-'''
-Define the colors that we want to separate out. 
-Each color needs to have a separate vector field so that weighting can be done.
-For example, the aversion to walk on grass is much less than the aversion to walk into a wall.
-Similarly, there is an attraction to walk on a path rather than on the road.
-'''
-MAP_ELEMENTS = [
-    MapColorElement('path', np.array([127, 127, 127]), externalBlurSigma=8, forceToEnter=25, internalBlurSigma=16, forceToLeave=-10),
-    MapColorElement('grass', np.array([34, 177, 76]), externalBlurSigma=4, forceToEnter=0, forceToLeave=15),
-    MapColorElement('obstacle', np.array([255, 255, 255]), externalBlurSigma=16, forceToEnter=-500, internalBlurSigma=32, forceToLeave=500)
-    # MapColorElement('red', np.array([237, 28, 36]), blurSigma=16, forceToEnter=1, forceToLeave=1),
-    # MapColorElement('blue', np.array([63, 72, 204]), blurSigma=16, forceToEnter=1, forceToLeave=1)
-]
-
-def get_total_field(image, elements=MAP_ELEMENTS):
-    vecField = np.zeros((512, 512, 2))
-    for element in elements:
-        dy, dx, mask = element.get_vector_field(image)
-        vecField[:, :, 0] += dx
-        vecField[:, :, 1] += dy
-    return vecField
 

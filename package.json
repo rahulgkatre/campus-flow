@@ -26,13 +26,15 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "concurrently --restart-tries 5 --names \"  CSS,REACT\" \"npm run watch:css\" \"react-scripts start\"",
-    "build": "npm run build:css && react-scripts build",
+    "start": "concurrently --restart-tries 5 --names \"  CSS,REACT,  MAP\" \"npm run watch:css\" \"react-scripts start\" \"npm run watch:maps\"",
+    "build": "npm run build:css && npm run build:maps && react-scripts build",
     "postbuild": "ncp build\\index.html build\\404.html",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build:css": "postcss src/assets/styles/tailwind.css -o src/assets/styles/index.css",
-    "watch:css": "nodemon --watch src/assets/styles --watch tailwind.config.js --ignore src/assets/styles/index.css --ext scss,css --exec \"postcss src/assets/styles/tailwind.css -o src/assets/styles/index.css\"",
+    "watch:css": "nodemon --watch src/assets/styles --watch tailwind.config.js --ignore src/assets/styles/index.css --ext scss,css --exec \"npm run build:css\"",
+    "build:maps": "python preprocessing/parse_map.py --maps src/assets/maps",
+    "watch:maps": "nodemon --watch preprocessing --watch src/maps --ext py,png --exec \"npm run build:maps\"",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },

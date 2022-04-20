@@ -51,7 +51,7 @@ def normalize_field(field):
 
     return field
 
-def add_noise(field, noise_level=10):
+def add_noise(field, noise_level=0.0):
     '''
     Add noise to the vector field
     '''
@@ -60,7 +60,6 @@ def add_noise(field, noise_level=10):
 
 def crop(data, center, lim):
     return data[center[1]-lim:center[1]+lim, center[0]-lim:center[0]+lim]
-
 
 def get_field_str(field_):
     '''

@@ -3,7 +3,7 @@ import { Image, Vector } from "p5";
 import { Particle } from "./Particle";
 import { Goal } from "./Goal";
 import basic_map_path from "assets/maps/basic/map.png";
-import basic_map_field from "assets/maps/basic/field";
+import basic_map_field from "assets/maps/basic/map";
 import { VectorField } from "./VectorField";
 
 export let p5: P5Instance;
@@ -30,6 +30,7 @@ export function sketch(p5: P5Instance) {
   goals.push(culc);
 
   let mapImage: Image;
+  let backgroundImage: Image;
 
   let paused = false;
 
@@ -61,6 +62,12 @@ export function sketch(p5: P5Instance) {
 
     mapImage.loadPixels();
 
+    // setup backgorund image
+    p5.background(0);
+    p5.image(mapImage, 0, 0);
+    // vectorField.draw(); // toggle comment this line to not draw vector field
+    backgroundImage = p5.get();
+
     reset();
   }
 
@@ -73,24 +80,27 @@ export function sketch(p5: P5Instance) {
     }
     if (props.paused !== undefined) {
       paused = props.paused;
+      p5.loop();
     }
   };
 
   function drawBackground() {
     p5.background(0);
-    p5.image(mapImage, 0, 0);
-    // vectorField.draw();
+    p5.image(backgroundImage, 0, 0);
   }
 
   p5.mousePressed = () => {
     if (p5.mouseX < 0 || p5.mouseX >= p5.width || p5.mouseY < 0 || p5.mouseY >= p5.height) {
       return;
     }
+    if (mapImage.get(p5.mouseX, p5.mouseY).every(v => v === 255)) {
+      return;
+    }
     particles.push(randomParticle(p5.createVector(p5.mouseX, p5.mouseY)));
   };
 
   p5.mouseDragged = () => {
-    if (p5.random() < 0.5) {
+    if (p5.random() < 0.3) {
       return;
     }
     p5.mousePressed();
@@ -101,19 +111,18 @@ export function sketch(p5: P5Instance) {
     
     if (!paused) {
       for (let i = 0; i < particles.length; i++) {
-        const reached = particles[i].evaluateForces(vectorField);
-        if (reached) {
-          particles.splice(i, 1);
-          i--;
-        }
-      }
-
-      for (const particle of particles) {
+        const particle = particles[i];
+        particle.resetOtherParticleAvoidance();
         for (const otherP of particles) {
           if (particle === otherP) {
             continue;
           }
           particle.avoidOther(otherP);
+        }
+        const reached = particle.evaluateForces(vectorField);
+        if (reached) {
+          particles.splice(i, 1);
+          i--;
         }
       }
     }
