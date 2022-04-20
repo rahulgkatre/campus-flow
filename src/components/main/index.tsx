@@ -9,6 +9,8 @@ export function Main() {
   const [sketchResetter, setSketchResetter] = useState<number>(0);
   const resetSketch = useCallback(() => setSketchResetter(n=>n+1), [setSketchResetter]);
 
+  const [paused, setPaused] = useState<boolean>(false);
+
   return <Page>
     <Card>
       <div className="w-full">
@@ -17,9 +19,12 @@ export function Main() {
           <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 mx-2 rounded" onClick={resetSketch}>
             Reset
           </button>
+          <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 mx-2 rounded" onClick={()=>setPaused(p => !p)}>
+            {paused ? 'Resume' : 'Pause'}
+          </button>
         </div>
         <div className='w-min mx-auto'>
-          <ReactP5Wrapper sketch={sketch} resetCounter={sketchResetter} />
+          <ReactP5Wrapper sketch={sketch} resetCounter={sketchResetter} paused={paused} />
         </div>
       </div>
     </Card>

@@ -1,6 +1,6 @@
 import { Color, Vector } from 'p5';
 import { Particle } from './Particle';
-// import { p5 } from './sketch';
+import { p5 } from './sketch';
 
 export class Goal {
   readonly positions: Vector[];
@@ -21,5 +21,8 @@ export class Goal {
       }
     }
     return this.positions[minIndex].copy();
+  }
+  randomPosition() {
+    return p5.random(this.positions).copy();
   }
 }

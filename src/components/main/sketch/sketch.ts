@@ -31,6 +31,8 @@ export function sketch(p5: P5Instance) {
 
   let mapImage: Image;
 
+  let paused = false;
+
   function randomPos() {
     return p5.createVector(p5.random(0, p5.width), p5.random(0, p5.height));
     // return Vector.random2D().mult(p5.random()*p5.width/2,p5.random()*p5.height/2).add(p5.width/2,p5.height/2);
@@ -69,6 +71,9 @@ export function sketch(p5: P5Instance) {
       }
       resetCounter = props.resetCounter;
     }
+    if (props.paused !== undefined) {
+      paused = props.paused;
+    }
   };
 
   function drawBackground() {
@@ -94,23 +99,28 @@ export function sketch(p5: P5Instance) {
   p5.draw = () => {
     drawBackground();
     
-    for (const particle of particles) {
-      particle.update();
-      //console.log(particle);
-      particle.draw();
-      particle.resetAccel();
-    }
-    for (const particle of particles) {
-      for (const otherP of particles) {
-        if (particle === otherP) {
-          continue;
+    if (!paused) {
+      for (let i = 0; i < particles.length; i++) {
+        const reached = particles[i].evaluateForces(vectorField);
+        if (reached) {
+          particles.splice(i, 1);
+          i--;
         }
-        particle.avoidOther(otherP);
+      }
+
+      for (const particle of particles) {
+        for (const otherP of particles) {
+          if (particle === otherP) {
+            continue;
+          }
+          particle.avoidOther(otherP);
+        }
       }
     }
-    
+
     for (const particle of particles) {
-      vectorField.pushParticle(particle);
+      if (!paused) particle.update();
+      particle.draw();
     }
 
     // draw mouse position next to mouse

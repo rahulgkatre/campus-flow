@@ -1,29 +1,26 @@
 import { Vector } from 'p5';
 import { p5 } from './sketch';
-import { Particle } from './Particle';
 
 export class VectorField {
   readonly field: Vector[][];
-  readonly repulsion: number;
+  static readonly repulsion = 1.0;
 
   constructor(fieldDescriptor: string) {
-    this.repulsion = 1.0;
     this.field = [];
     const lines = fieldDescriptor.split('\n');
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
       if (line.length > 0) {
-        const fieldStrengths = line.split(' ').map(vecStr => vecStr.slice(1, -1).split(',').map(v => parseFloat(v))).map(v => p5.createVector(v[0], -v[1]).mult(this.repulsion));
+        const fieldStrengths = line.split(' ').map(vecStr => vecStr.slice(1, -1).split(',').map(v => parseFloat(v))).map(v => p5.createVector(v[0], -v[1]).mult(VectorField.repulsion));
         this.field.push(fieldStrengths);
       }
     }
     // console.log(this.field);
   }
-  pushParticle(particle: Particle) {
-    const yInd = Math.floor(particle.position.y * this.field.length / (p5.height+1));
-    const xInd = Math.floor(particle.position.x * this.field[0].length / (p5.width+1));
-    const fieldForce = this.field[p5.constrain(yInd, 0, this.field.length-1)][p5.constrain(xInd, 0, this.field[0].length-1)];
-    particle.applyForce(fieldForce);
+  forceAtPoint(point: Vector) {
+    const yInd = Math.floor(point.y * this.field.length / (p5.height+1));
+    const xInd = Math.floor(point.x * this.field[0].length / (p5.width+1));
+    return this.field[p5.constrain(yInd, 0, this.field.length-1)][p5.constrain(xInd, 0, this.field[0].length-1)].copy();
   }
   draw() {
     // draw small arrows for each vector

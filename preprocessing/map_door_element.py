@@ -7,4 +7,4 @@ class MapDoorElement:
         self.building_name = building_name
 
     def json():
-                
+         pass

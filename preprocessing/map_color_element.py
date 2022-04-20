@@ -55,9 +55,9 @@ For example, the aversion to walk on grass is much less than the aversion to wal
 Similarly, there is an attraction to walk on a path rather than on the road.
 '''
 MAP_ELEMENTS = [
-    MapColorElement('path', np.array([127, 127, 127]), externalBlurSigma=4, forceToEnter=0.25, internalBlurSigma=16, forceToLeave=0.25),
-    MapColorElement('grass', np.array([34, 177, 76]), externalBlurSigma=4, forceToEnter=0.25, forceToLeave=0.25),
-    MapColorElement('obstacle', np.array([255, 255, 255]), externalBlurSigma=4, forceToEnter=-512, forceToLeave=0)
+    MapColorElement('path', np.array([127, 127, 127]), externalBlurSigma=8, forceToEnter=25, internalBlurSigma=16, forceToLeave=-10),
+    MapColorElement('grass', np.array([34, 177, 76]), externalBlurSigma=4, forceToEnter=0, forceToLeave=15),
+    MapColorElement('obstacle', np.array([255, 255, 255]), externalBlurSigma=16, forceToEnter=-500, internalBlurSigma=32, forceToLeave=500)
     # MapColorElement('red', np.array([237, 28, 36]), blurSigma=16, forceToEnter=1, forceToLeave=1),
     # MapColorElement('blue', np.array([63, 72, 204]), blurSigma=16, forceToEnter=1, forceToLeave=1)
 ]
