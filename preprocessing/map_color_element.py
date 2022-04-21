@@ -21,7 +21,7 @@ class MapColorElement:
         '''
         color_mask = get_color_mask(self.color, image)
         # blur the outside and inside separately
-        int_blur = gaussian(color_mask.astype(float), sigma=self.internalBlurSigma)
+        int_blur = gaussian((~color_mask).astype(float), sigma=self.internalBlurSigma)
         ext_blur = gaussian(color_mask.astype(float), sigma=self.externalBlurSigma)
 
         # zero out the field where a different color is present
@@ -36,8 +36,8 @@ class MapColorElement:
         dy_int, dx_int = np.gradient(int_blur)
 
         # combine the two blurs for internal/external
-        dy = np.where(~color_mask, dy_ext, dy_int)
-        dx = np.where(~color_mask, dx_ext, dx_int)
+        dy = np.where(~color_mask, dy_ext, -dy_int)
+        dx = np.where(~color_mask, dx_ext, -dx_int)
 
         # get unit vectors
         norm = np.sqrt(dy ** 2 + dx ** 2)

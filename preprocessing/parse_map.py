@@ -2,8 +2,7 @@ import argparse
 import os
 import sys
 
-from map_color_element import *
-from config import MAP_ELEMENTS, NULL_COLOR
+from config import MAP_COLOR_ELEMENTS, NULL_COLOR, MAP_BUILDING_ELEMENTS
 from utils import *
 
 parser = argparse.ArgumentParser(description='Process a map image into a importable typescript file for a p5 sketch.')
@@ -12,7 +11,7 @@ parser.add_argument('--mapdir', type=str, required=False,
 parser.add_argument('--maps', type=str, required=False,
                     help='where to look for a collection of map folders with map.png and generate a map.ts')
 
-def get_total_field(image, elements=MAP_ELEMENTS):
+def get_total_field(image, elements=MAP_COLOR_ELEMENTS):
     vecField = np.zeros((512, 512, 2))
     null_color_mask = get_color_mask(NULL_COLOR, image)
     for element in elements:
@@ -20,6 +19,18 @@ def get_total_field(image, elements=MAP_ELEMENTS):
         vecField[:, :, 0] += dx
         vecField[:, :, 1] += dy
     return vecField
+
+def evaluate_curls(image, elements=MAP_BUILDING_ELEMENTS):
+    obstacle_element = list(filter(lambda c: c.name == 'obstacle', MAP_COLOR_ELEMENTS))[0]
+    obstacle_field = get_total_field(image, [obstacle_element])
+    obstacle_field[get_color_mask(obstacle_element.color, image)] = 0
+    obstacle_field = normalize_field(obstacle_field)
+    fieldL = normalize_field(obstacle_field) @ np.array([[0, 1], [-1, 0]])
+    fieldR = -fieldL
+
+    for element in elements:
+        element.set_curl_field(image, fieldL, fieldR)
+    return elements
 
 def runOnMapDir(mapdir, exit=False):
     image_path = os.path.join(mapdir, "map.png")
@@ -34,11 +45,13 @@ def runOnMapDir(mapdir, exit=False):
     field = get_total_field(img)
     field = add_noise(field)
     field = normalize_field(field)
-    
+
+    buildings = evaluate_curls(img)
+
     if os.path.isfile(field_path):
         print("map.ts already exists in {}. replacing...".format(mapdir))
         # os.remove(field_path)
-    write_field_file(field, field_path)
+    write_field_file(field_path, field, buildings)
 
 if __name__ == "__main__":
     args = parser.parse_args()

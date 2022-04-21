@@ -25,15 +25,31 @@ export class VectorField {
   draw() {
     // draw small arrows for each vector
     const incr = 5;
-    for (let x = 0; x < p5.width; x+=incr) {
-      for (let y = 0; y < p5.height; y+=incr) {
-        const vec = this.getForce(new Vector(x,y)).normalize().mult(incr*0.7);
-        p5.stroke(255);
-        p5.strokeWeight(incr/8);
-        p5.line(x, y, x + vec.x, y + vec.y);
-        p5.strokeWeight(incr/3);
-        p5.point(x, y);
+    const avgVector = p5.createVector(0, 0);
+    const maxVector = p5.createVector(0, 0);
+    const maxVecLoc = p5.createVector(0, 0);
+    let count = 0;
+    for (let x = 0; x < p5.width; x++) {
+      for (let y = 0; y < p5.height; y++) {
+        const vec = this.getForce(new Vector(x,y));
+        avgVector.add(vec);
+        count++;
+        if (vec.mag() > maxVector.mag()) {
+          maxVector.set(vec);
+          maxVecLoc.set(x, y);
+        }
+        if (x%incr === 0 && y%incr === 0) {
+          vec.normalize().mult(incr*0.7);
+          p5.stroke(255);
+          p5.strokeWeight(incr/8);
+          p5.line(x, y, x + vec.x, y + vec.y);
+          p5.strokeWeight(incr/3);
+          p5.point(x, y);
+        }
       }
     }
+    avgVector.div(count);
+    // console.log(avgVector);
+    // console.log(maxVector, maxVecLoc);
   }
 }

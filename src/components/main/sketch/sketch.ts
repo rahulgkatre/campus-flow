@@ -3,7 +3,7 @@ import { Image, Vector } from "p5";
 import { Particle } from "./Particle";
 import { Goal } from "./Goal";
 import basic_map_path from "assets/maps/basic/map.png";
-import basic_map_field from "assets/maps/basic/map";
+import {field as basic_map_field, buildings as basic_map_buildings} from "assets/maps/basic/map";
 import { VectorField } from "./VectorField";
 
 export let p5: P5Instance;
@@ -12,6 +12,7 @@ function setP5(p: P5Instance) {
 }
 
 const fieldDescriptor = basic_map_field;
+const buildings = basic_map_buildings;
 
 export function sketch(p5: P5Instance) {
   setP5(p5);
@@ -24,10 +25,24 @@ export function sketch(p5: P5Instance) {
 
   let resetCounter = 0;
 
-  const coc: Goal = new Goal([p5.createVector(55, 90), p5.createVector(230, 135)], p5.color(255, 0, 0));
-  const culc: Goal = new Goal([p5.createVector(235, 370), p5.createVector(440, 420)], p5.color(0, 0, 255));
-  goals.push(coc);
-  goals.push(culc);
+  const defaultColors = [
+    p5.color(255, 0, 0),
+    p5.color(0, 0, 255),
+    p5.color(0, 255, 0),
+    p5.color(255, 255, 0),
+    p5.color(255, 0, 255),
+    p5.color(0, 255, 255),
+    p5.color(255, 255, 255),
+  ];
+
+  for (const building of buildings) {
+    goals.push(new Goal(
+        building.name,
+        building.entryPoints.map(p => p5.createVector(...p)),
+        building.curl,
+        defaultColors.length > 0 ? defaultColors.shift()! : p5.color(p5.random(255), p5.random(255), p5.random(255))
+      ));
+  }
 
   let mapImage: Image;
   let backgroundImage: Image;
@@ -40,7 +55,7 @@ export function sketch(p5: P5Instance) {
   }
 
   function randomParticle(pos?: Vector) {
-    return new Particle(pos ?? randomPos(), p5.random(goals));
+    return new Particle(pos ?? randomPos(), p5.random(goals.slice(0,1)));
   }
 
   function reset() {
@@ -66,6 +81,7 @@ export function sketch(p5: P5Instance) {
     p5.background(0);
     p5.image(mapImage, 0, 0);
     // vectorField.draw(); // toggle comment this line to not draw vector field
+    goals[0].curlField.draw();
     backgroundImage = p5.get();
 
     reset();
@@ -93,9 +109,9 @@ export function sketch(p5: P5Instance) {
     if (p5.mouseX < 0 || p5.mouseX >= p5.width || p5.mouseY < 0 || p5.mouseY >= p5.height) {
       return;
     }
-    if (mapImage.get(p5.mouseX, p5.mouseY).every(v => v === 255)) {
-      return;
-    }
+    // if (mapImage.get(p5.mouseX, p5.mouseY).every(v => v === 255)) {
+    //   return;
+    // }
     particles.push(randomParticle(p5.createVector(p5.mouseX, p5.mouseY)));
   };
 

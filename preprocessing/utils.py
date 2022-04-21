@@ -61,21 +61,47 @@ def add_noise(field, noise_level=0.0):
 def crop(data, center, lim):
     return data[center[1]-lim:center[1]+lim, center[0]-lim:center[0]+lim]
 
+def get_2d_vec_str(vecMatrix):
+    '''
+    Convert a matrix of vectors to a string
+    '''
+    vecStr = ''
+    for y in range(0,512):
+        for x in range(0,512):
+            vecStr += f'[{vecMatrix[y,x,0]:.2f},{vecMatrix[y,x,1]:.2f}] '
+        vecStr += '\n'
+    return vecStr
+
 def get_field_str(field_):
     '''
     Convert the vector field to a string for saving
     '''
     fieldStr = 'export const field = `\n'
-    for y in range(0,512):
-        for x in range(0,512):
-            fieldStr += f'[{field_[y,x,0]:.2f},{field_[y,x,1]:.2f}] '
-        fieldStr += '\n'
-    return fieldStr + '`;\nexport default field;\n'
+    fieldStr += get_2d_vec_str(field_)
+    return fieldStr + '`;\n'
 
-def write_field_file(field_, path: str='map.ts'):
+def get_building_str(buildings):
+    '''
+    Convert the buildings to a string for saving
+    '''
+    buildingStr = 'export const buildings = \n[\n\t'
+    for building in buildings:
+        buildingStr += f'{"{"}\n\t\tname: "{building.building_name}",\n\t\t'
+        buildingStr += f'entryPoints: [\n\t\t\t'
+        for entry_point in building.entry_points:
+            buildingStr += f'[{entry_point[0]},{entry_point[1]}],\n\t\t\t'
+        buildingStr += '],\n\t\t'
+        buildingStr += f'curl: `\n'
+        buildingStr += get_2d_vec_str(building.curl)
+        buildingStr += '\n`\n\t},\n\t'
+    return buildingStr + '\n];\n'
+
+def write_field_file(path: str, field_, buildings):
     '''
     Save the vector field string as a file
     '''
     fieldStr = get_field_str(field_)
+    buildingStr = get_building_str(buildings)
     with open(path, 'w') as f:
         f.write(fieldStr)
+        f.write(buildingStr)
