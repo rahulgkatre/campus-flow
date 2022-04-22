@@ -41,6 +41,25 @@ def plot_vector_field(dy, dx, center, lim):
     plt.axis('off')
     plt.show()
 
+def plot_vector_field_color(dy, dx, center, lim):
+    '''
+    Plot the vector field at a given center with bounds of [center-lim,center+lim] in both x,y directions
+    '''
+
+    pixels = np.linspace(0, 512, 512, endpoint=False).astype(int)
+    x, y = np.meshgrid(pixels, pixels)
+
+    plt.figure(figsize=(32,32))
+
+    mag = np.sqrt(dy ** 2 + dx ** 2)
+    dx_dir = dx / np.where(mag != 0, mag, 1)
+    dy_dir = dy / np.where(mag != 0, mag, 1)
+
+    # Reverse y coordinates because image and axes y are reverses.
+    plt.quiver(crop(x,center,lim), crop(y,center,lim)[::-1], crop(dx,center,lim), crop(dy_dir,center,lim), crop(mag,center,lim), cmap=plt.cm.jet)
+    plt.axis('off')
+    plt.show()
+
 def normalize_field(field):
     '''
     Max-normalize the field based on magnitude of vec
