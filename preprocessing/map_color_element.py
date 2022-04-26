@@ -21,13 +21,12 @@ class MapColorElement:
         Calculate gradient over a slightly blurred image for a specific color
         This lets us calculate the vector field for a specific environment object (e.g. obstacle)
         '''
+        # get a mask of the image for the specific color of the element
         color_mask = get_color_mask(self.color, image)
-        # blur the outside and inside separately, combine blur results from multiple sigma values 
-
+        
+        # blur the outside and inside separately, average blur results from multiple sigma values 
         int_blur = sum([gaussian((~color_mask).astype(float), sigma=int_sig) / len(self.internalBlurSigmas) for int_sig in self.internalBlurSigmas])
         ext_blur = sum([gaussian(cv2.dilate(color_mask.astype(float), np.ones((5, 5))), sigma=ext_sig) / len(self.externalBlurSigmas) for ext_sig in self.externalBlurSigmas])
-
-        display_image(np.where(~color_mask, ext_blur, int_blur))
 
         # zero out the field where a different color is present
         if null_color_mask is not None:

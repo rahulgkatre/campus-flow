@@ -78,6 +78,11 @@ def add_noise(field, noise_level=0.0):
     return field
 
 def crop(data, center, lim):
+    ''' 
+    Crop the image by selecting a center point and only including
+    all pixels within lim distance of the center point
+    '''
+
     return data[center[1]-lim:center[1]+lim, center[0]-lim:center[0]+lim]
 
 def get_2d_vec_str(vecMatrix):
