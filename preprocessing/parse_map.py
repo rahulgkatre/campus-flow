@@ -12,7 +12,9 @@ parser.add_argument('--maps', type=str, required=False,
                     help='where to look for a collection of map folders with map.png and generate a map.ts')
 
 def get_total_field(image, elements=MAP_COLOR_ELEMENTS):
-    vecField = np.zeros((512, 512, 2))
+    # print(image.shape)
+    height,width = image.shape[:2]
+    vecField = np.zeros((height, width, 2))
     null_color_mask = get_color_mask(NULL_COLOR, image)
     for element in elements:
         dy, dx, mask = element.get_vector_field(image, null_color_mask)
@@ -47,6 +49,8 @@ def runOnMapDir(mapdir, exit=False):
     field = normalize_field(field)
 
     buildings = evaluate_curls(img)
+
+    plot_vector_field_color(field[:, :, 1], field[:, :, 0], (img.shape[0] // 2, img.shape[1] // 2), (img.shape[0] // 2), shape=img.shape[:2])
 
     if os.path.isfile(field_path):
         print("map.ts already exists in {}. replacing...".format(mapdir))

@@ -23,7 +23,7 @@ export function Main() {
             {paused ? 'Resume' : 'Pause'}
           </button>
         </div>
-        <div className='w-min mx-auto'>
+        <div className='w-full mx-auto max-w-100'>
           <ReactP5Wrapper sketch={sketch} resetCounter={sketchResetter} paused={paused} />
         </div>
       </div>
