@@ -118,7 +118,7 @@ def get_building_str(buildings):
         buildingStr += f'curl: `\n'
         buildingStr += ''#get_2d_vec_str(building.curl)
         buildingStr += '\n`\n\t},\n\t'
-    return buildingStr + '\n];\n'
+    return buildingStr + '\n] as const;\n'
 
 def write_field_file(path: str, field_, buildings):
     '''

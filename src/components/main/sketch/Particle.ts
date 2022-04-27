@@ -4,12 +4,16 @@ import { p5 } from './sketch';
 import { VectorField } from './VectorField';
 
 export class Particle {
-  static readonly maxSpeed = 1;
+  static readonly maxSpeed = 1.5;
   static readonly RESISTANCE_TO_TURN = 0.1;
   static readonly MOVING_AVG_SIZE = 20;
   static readonly GOAL_REACHED_DIST = 10;
+  static readonly MAX_CONFUSION_COUNT = 3;
 
-  private readonly goal: Goal;
+  readonly id: number;
+  readonly spawnTime: number;
+  readonly start: Goal;
+  readonly goal: Goal;
   private readonly position: Vector;
   private goalPos: Vector;
   private readonly heading: Vector;
@@ -23,10 +27,14 @@ export class Particle {
   private framesSameGoal: number;
 
   private curled: boolean;
+  confusedCount: number;
 
-  constructor(pos: Vector, goal: Goal) {
+  constructor(id: number, spawnTime: number, start: Goal, goal: Goal) {
+    this.id = id;
+    this.spawnTime = spawnTime;
+    this.start = start;
     this.goal = goal;
-    this.position = pos;
+    this.position = start.closestPosition(goal.randomPosition());
     this.goalPos = goal.closestPosition(this.position);
     this.heading = Vector.sub(this.goalPos, this.position).normalize();
     this.avgOtherParticle = new Vector(0, 0);
@@ -36,6 +44,7 @@ export class Particle {
     this.movingAvgIndex = 0;
     this.framesSameGoal = 0;
     this.curled = false;
+    this.confusedCount = 0;
     this.resetMovingAvgPositions();
     this.resetMovingAvgHeadings();
   }
@@ -60,7 +69,7 @@ export class Particle {
       this.resetMovingAvgPositions();
       distToGoal = this.position.dist(this.goalPos);
     }
-    if (distToGoal <= Particle.GOAL_REACHED_DIST) {
+    if (distToGoal <= Particle.GOAL_REACHED_DIST || this.confusedCount > Particle.MAX_CONFUSION_COUNT) {
       this.heading.mult(0);
       return true;
     }
@@ -102,7 +111,7 @@ export class Particle {
 
     const desiredHeading = new Vector(0,0)
         .add(toGoalHeading.mult(goalEffect))
-        .add(avoidOthersHeading.mult(this.otherParticleCount*2))
+        .add(avoidOthersHeading.mult(this.otherParticleCount*4.5))
         .add(fieldForce.mult(fieldEffect))
         .add(fieldForceAtHeading.mult(fieldEffect))
         .add(curlForce.mult(curlEffect))
@@ -141,6 +150,7 @@ export class Particle {
       // console.log('avg: ' + avgHeading);
       this.goalPos = this.goal.closestPosition(this.position, [this.goalPos]);
       this.resetMovingAvgPositions();
+      this.confusedCount++;
       // p5.noLoop();
     }
 
@@ -157,16 +167,21 @@ export class Particle {
     p5.fill(this.goal.color);
     p5.circle(this.position.x, this.position.y, 5);
     p5.stroke(this.goal.color);
-    const lookingAt = Vector.add(this.position, this.heading.mult(7));
-    // draw an arrow from position to lookingAt
-    p5.line(this.position.x, this.position.y, lookingAt.x, lookingAt.y);
-    // p5.strokeWeight(2);
-    // p5.line(lookingAt.x, lookingAt.y, lookingAt.x + (lookingAt.x - this.position.x) * 0.5, lookingAt.y + (lookingAt.y - this.position.y) * 0.5);
-    // p5.line(lookingAt.x, lookingAt.y, lookingAt.x - (lookingAt.x - this.position.x) * 0.5, lookingAt.y - (lookingAt.y - this.position.y) * 0.5);
-    // p5.strokeWeight(1);
-    if (this.position.dist(this.goalPos) <= Particle.GOAL_REACHED_DIST) {
-      p5.stroke([0,255,0]);
-    }
-    p5.line(this.position.x, this.position.y, this.goalPos.x, this.goalPos.y);
+    // const lookingAt = Vector.add(this.position, this.heading.mult(7));
+    // // draw an arrow from position to lookingAt
+    // p5.line(this.position.x, this.position.y, lookingAt.x, lookingAt.y);
+    // // p5.strokeWeight(2);
+    // // p5.line(lookingAt.x, lookingAt.y, lookingAt.x + (lookingAt.x - this.position.x) * 0.5, lookingAt.y + (lookingAt.y - this.position.y) * 0.5);
+    // // p5.line(lookingAt.x, lookingAt.y, lookingAt.x - (lookingAt.x - this.position.x) * 0.5, lookingAt.y - (lookingAt.y - this.position.y) * 0.5);
+    // // p5.strokeWeight(1);
+    // if (this.position.dist(this.goalPos) <= Particle.GOAL_REACHED_DIST) {
+    //   p5.stroke([0,255,0]);
+    // }
+    // p5.line(this.position.x, this.position.y, this.goalPos.x, this.goalPos.y);
   }
+
+  markGoalAsReached() {
+    this.goal.markReachedByAt(this.id, this.spawnTime);
+  }
+
 }

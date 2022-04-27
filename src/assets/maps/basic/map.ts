@@ -636,5 +636,5 @@ export const buildings =
 `
 	},
 	
-];
+] as const;
 export { img_path };
