@@ -7,6 +7,7 @@ start_time = 0
 end_time = 86400
 
 #The various buildings, categorized by type
+
 #housing = ["North Avenue North", "North Avenue South", "North Avenue East", "North Avenue West", "Towers Residence Hall", "Glenn Residence Hall"]
 #housing = ["Housing1", "Housing2"]
 #housing = ["culc"]
@@ -19,6 +20,7 @@ borders = ["NorthExit", "EastExit", "SouthExit", "WestExit"]
 if len(borders) == 0:
 	borders = housing
 if len(housing) == 0:
+	print("There is no housing within the map borders. Please make sure the map has enterable borders, which will function as off-map housing.")
 	housing = borders
 
 #buildings = ["CULC", "Skiles", "Georgia Tech Tower", "CoC", "Howey", "Klaus", "Van Leer", "Georgia Tech Library", "Student Center"]
@@ -56,10 +58,10 @@ people = {"student": [True, 1, 0],
          #  "other": [False, 0.15, 0]}
 
 #Value for "campus_housing" key in parameters dictionary
-campus_housing = {"student": 1,
-                  "professor": 1,
-                  "faculty": 1,
-                  "other": 1}
+campus_housing = {"student": 1 if len(borders) == 0 else 1,
+                  "professor": 1 if len(borders) == 0 else 1,
+                  "faculty": 1 if len(borders) == 0 else 1,
+                  "other": 1 if len(borders) == 0 else 1}
                  # {"student": 0.5,
                  #  "professor": 0,
                  #  "faculty": 0,
@@ -67,8 +69,8 @@ campus_housing = {"student": 1,
 
 #Value for "events_classes" key in parameters dictionary
 events_classes = {"student": {"housing": 0, 
-                              "borders": 0,
-                              "buildings": 1,
+                              "borders": 0 if len(borders) == 0 else 0,
+                              "buildings": 1 if len(borders) == 0 else 1,
                               "other": 0},
                   "professor": {"housing": 0,
                                 "borders": 0,
@@ -100,21 +102,27 @@ events_classes = {"student": {"housing": 0,
                  #            "other": 0}}
 
 #The different parameters for schedule generation
-parameters = {"num_people": 50000, #number of particles in simulation for automatic particle class generation
+parameters = {"num_people": 500000, #number of particles in simulation for automatic particle class generation
               "auto_class": True, #generation of particle classes - True: automatic, False: manual. Note for automatic, percentage of particles in each class may not be exact, depending on the rounding of numbers in the calculation
               "event_number": [1,3], #minimum and maximum number of events a particle can have in a day (min: 1, max: 3)
               "min_len_event": round(50*(end_time - start_time)/1440), #Minimum duration of an event (50 minutes)
               "max_walk_time": round(30*(end_time - start_time)/1440), #Maximum time it takes to get from one location to another (30 minutes)
               "start_day": start_time + round(7*(end_time - start_time)/24), #Schedule cannot start earlier than this time (7 AM)
               "end_day": end_time - round(2*(end_time - start_time)/24), #Schedule cannot end later than this time (10 PM)
-              "campus_housing": campus_housing, #probability of particle living on-campus vs. off-campus based on class
-              "events_classes": events_classes} #probability of event type for particle schedules based on particle class
+              "campus_housing": campus_housing, #Probability of particle living on-campus rather than off-campus based on class
+              "events_classes": events_classes, #Probability of event type for particle schedules based on particle class
+			  "time_constraint": True, #Do the times of the schedules have constraints? True: yes (constrained schedule times), False: no (no constraints, just random)
+			  "event_syncing": True, #Do the event times of each particle match each other? True: yes, False: no
+			  "event_clumping": True} #Are the event times of each particle as close together as possible? True: yes, False: no
 
 #Methods
-#Determine the number of particles for each class
-def determine_classes(people, num_people, auto_class):
+
+#Determine the number of particles for each class and generate the class of each particle
+def generate_classes(schedule, people, num_people, parameters):
+	#Determine the number of particles for each class
 	persons = people.keys()
-	if auto_class:
+	auto_class = parameters["auto_class"]
+	if auto_class: #Automatically generate the number of particles for each class
 		count = 0
 		for person in persons:
 			people[person] = int(round(people[person][0] * people[person][1] * num_people))
@@ -129,39 +137,22 @@ def determine_classes(people, num_people, auto_class):
 				while count > num_people:
 					people[main] -= 1
 					count -= 1
-	else:
+	else: #Manually generate the number of particles for each class
 		for person in persons:
 			people[person] = people[person][0] * people[person][2]
-
-#Generate the class of each particle
-def generate_classes(schedule, people):
-	persons = people.keys()
+	#Generate the class of each particle
 	for person in persons:
 		for i in range(0,people[person]):
 			particle = {"particle_class": person, "particle_schedule": []}
 			schedule.append(particle)
 
 #Generate the number of events of each particle
-def determine_events(schedule, num_event_range):
+def generate_num_events(schedule, num_event_range):
+	num_event_range = parameters["event_number"]
 	for person in range(0, len(schedule)):
 		num_events = random.randint(num_event_range[0],num_event_range[1])
 		for event in range(0,num_events+1):
 			schedule[person]["particle_schedule"].append([])
-
-#Generate the start and end location and times
-def generate_start_and_end(schedule, on_campus, off_campus, campus_probability, t_start, t_end, min_len_event, max_walk_time):
-	for person in range(0, len(schedule)):
-		num_events = len(schedule[person]["particle_schedule"])-1
-		schedule_length = num_events*min_len_event + (num_events+1)*max_walk_time
-		begin_time = random.randint(t_start, t_end - schedule_length)
-		campus = random.random()
-		location = None
-		if campus <= campus_probability[schedule[person]["particle_class"]]:
-			location = random.choice(on_campus)
-		else:
-			location = random.choice(off_campus)
-		schedule[person]["particle_schedule"][0].append(location)
-		schedule[person]["particle_schedule"][0].append(begin_time)
 
 #Helper method for the generate_events() function
 def helper_generate_events(schedule, locations, event_probability, person):
@@ -184,9 +175,18 @@ def helper_generate_events(schedule, locations, event_probability, person):
 	return location
 
 #Generate the locations of the events for each particle's schedule
-def generate_events(schedule, locations, event_probability):
+def generate_events(schedule, locations, campus_probability, event_probability):
+	campus_probability = parameters["campus_housing"]
+	event_probability = parameters["events_classes"]
 	for person in range(0, len(schedule)):
 		event_list = schedule[person]["particle_schedule"]
+		campus = random.random()
+		location = None
+		if campus <= campus_probability[schedule[person]["particle_class"]]:
+			location = random.choice(locations[0])
+		else:
+			location = random.choice(locations[1])
+		event_list[0].append(location)
 		if len(event_list) == 2:
 			location = helper_generate_events(schedule, locations, event_probability, person)
 			while location == event_list[0][0]:
@@ -205,13 +205,24 @@ def generate_events(schedule, locations, event_probability):
 						location = helper_generate_events(schedule, locations, event_probability, person)
 				event_list[event].append(location)
 
+#Generate the start and end location and times
+def generate_start_and_end(schedule, t_start, t_end, min_len_event, max_walk_time):
+	for person in range(0, len(schedule)):
+		num_events = len(schedule[person]["particle_schedule"])-1
+		schedule_length = num_events*min_len_event + (num_events+1)*max_walk_time
+		begin_time = random.randint(t_start, t_end - schedule_length)
+		schedule[person]["particle_schedule"][0].append(begin_time)
+
 #Generate the times of the events for each particle's schedule
-def generate_times(schedule, t_end, max_walk_time, min_length_event):
+def generate_times(schedule, t_start, t_end, max_walk_time, min_length_event):
 	for person in range(0, len(schedule)):
 		event_list = schedule[person]["particle_schedule"]
-		t_start = event_list[0][1]
+		num_events = len(event_list)-1
+		schedule_length = num_events*min_length_event + (num_events-1)*max_walk_time
+		begin_time = random.randint(t_start, t_end - schedule_length - max_walk_time)
+		event_list[0].append(begin_time)
 		for event in range(0, len(event_list)):
-			t_low = t_start - max_walk_time
+			t_low = begin_time - max_walk_time
 			if event != 0:
 				t_low = event_list[event-1][1]+max_walk_time+min_length_event
 			t_high = t_end
@@ -229,12 +240,11 @@ def generate_times(schedule, t_end, max_walk_time, min_length_event):
 def generate_schedule(people_classes, locations, parameters):
 	dictionary = {"num_particles": parameters["num_people"],
 	              "particles": []}
-	determine_classes(people_classes, dictionary["num_particles"], parameters["auto_class"])
-	generate_classes(dictionary["particles"], people_classes)
-	determine_events(dictionary["particles"], parameters["event_number"])
-	generate_start_and_end(dictionary["particles"], locations[0], locations[1], parameters["campus_housing"], parameters["start_day"], parameters["end_day"], parameters["min_len_event"], parameters["max_walk_time"])
-	generate_events(dictionary["particles"], locations, parameters["events_classes"])
-	generate_times(dictionary["particles"], parameters["end_day"], parameters["max_walk_time"], parameters["min_len_event"])
+	generate_classes(dictionary["particles"], people_classes, dictionary["num_particles"], parameters)
+	generate_num_events(dictionary["particles"], parameters)
+	generate_start_and_end(dictionary["particles"], parameters["start_day"], parameters["end_day"], parameters["min_len_event"], parameters["max_walk_time"])
+	generate_events(dictionary["particles"], locations, parameters["campus_housing"], parameters["events_classes"])
+	generate_times(dictionary["particles"], parameters["start_day"], parameters["end_day"], parameters["max_walk_time"], parameters["min_len_event"])
 	if dictionary["num_particles"] != len(dictionary["particles"]):
 		print("Error: There are particles missing. Do not proceed.")
 		return -1
@@ -258,7 +268,7 @@ def generate_schedule(people_classes, locations, parameters):
 
 outdir = os.path.join(os.path.dirname(__file__), "../src/assets/schedules/")
 mapname = "campus"
-version = 4
+version = 5
 
 if __name__ == '__main__':
 	schedule = generate_schedule(people, objects, parameters)
@@ -266,8 +276,8 @@ if __name__ == '__main__':
 	if schedule == -1:
 		print("Due to previous error, the schedule cannot be generated. Please try again.")
 	else:
-		data = json.dumps(schedule, indent=2)
+		data = json.dumps(schedule, indent=None)
 		with open(os.path.join(outdir, f'{mapname}{version}.ts'), "w") as file:
-			file.write("export const schedule = ")
+			file.write("export const scheduleStr = `")
 			file.write(data)
-			file.write(" as const;\nexport default schedule;\n")
+			file.write("` as const;\nexport const schedule = JSON.parse(scheduleStr);\nexport default schedule;\n")
