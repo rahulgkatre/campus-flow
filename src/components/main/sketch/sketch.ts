@@ -75,6 +75,7 @@ export function sketch(p5: P5Instance) {
   let TIME = 0;
 
   const travel_times: number[] = [];
+  const travel_time_map: Map<string, number[]> = new Map();
 
   // function randomPos() {
   //   return p5.createVector(p5.random(0, p5.width), p5.random(0, p5.height));
@@ -86,7 +87,7 @@ export function sketch(p5: P5Instance) {
   // }
 
   function READ_RAW_TIME(): number {
-    return p5.millis();
+    return p5.frameCount / 60 * 1000;
   }
 
   function reset() {
@@ -98,7 +99,7 @@ export function sketch(p5: P5Instance) {
 
     lastTimeCheck = READ_RAW_TIME();
     TIME = EARLIEST_SPAWN - SIM_START_DELAY;
-    console.log(EARLIEST_SPAWN,TIME);
+    // console.log(EARLIEST_SPAWN,TIME);
 
     travel_times.length = 0;
 
@@ -238,7 +239,7 @@ export function sketch(p5: P5Instance) {
         live_particle_ids.delete(particle.id);
         const travel_time = TIME - particle.spawnTime;
         if (particle.confusedCount <= Particle.MAX_CONFUSION_COUNT && travel_time <= 2000) {
-          travel_times.push(travel_time);
+          registerTravelTime(travel_time, particle.start.name, particle.goal.name);
           doAnalysisPerFrame();
         } else {
           console.log(`particle ${particle.id} took a long time: ${postProcessTimeValue(travel_time)[1]}\n\t${particle.start.name} -> ${particle.goal.name}`);
@@ -262,15 +263,40 @@ export function sketch(p5: P5Instance) {
     return [time,`${minutes}:${seconds_ < 10 ? "0" : ""}${seconds_}`];
   }
 
+  function registerTravelTime(travel_time: number, start: string, goal: string) {
+    const key = `${start}->${goal}`;
+    const entry = travel_time_map.get(key);
+    if (entry === undefined) {
+      travel_time_map.set(key, [travel_time]);
+    } else {
+      entry.push(travel_time);
+    }
+    travel_times.push(travel_time);
+  }
+
+  function getMinMaxMeanStdTimes(times: number[], print = false) {
+    const [min,minStr] = postProcessTimeValue(Math.min(...times));
+    const [max,maxStr] = postProcessTimeValue(Math.max(...times));
+    const [mean,meanStr] = postProcessTimeValue(times.reduce((a, b) => a + b, 0) / times.length);
+    const [std,stdStr] = postProcessTimeValue(Math.sqrt(times.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / times.length));
+    if (print) {
+      console.log(`min: ${minStr}, max: ${maxStr}, mean: ${meanStr}, std: ${stdStr}`);
+    }
+    return [min,minStr,max,maxStr,mean,meanStr,std,stdStr];
+  }
+
   function doAnalysisPerFrame() {
     // find hot spots where there are a lot of particles
     
     // data analysis on travel times
-    const [,minStr] = postProcessTimeValue(Math.min(...travel_times));
-    const [,maxStr] = postProcessTimeValue(Math.max(...travel_times));
-    const [mean,meanStr] = postProcessTimeValue(travel_times.reduce((a, b) => a + b, 0) / travel_times.length);
-    const [,stdStr] = postProcessTimeValue(Math.sqrt(travel_times.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / travel_times.length));
-    console.log(`min: ${minStr}, max: ${maxStr}, mean: ${meanStr}, std: ${stdStr}`);
+    getMinMaxMeanStdTimes(travel_times, true);
+
+    travel_time_map.forEach((times, key) => {
+      const [start,goal] = key.split("->");
+      const [,minStr,,maxStr,,meanStr,,stdStr] = getMinMaxMeanStdTimes(times, false);
+      console.log(`\t${start}->${goal}: [${minStr},  ${meanStr} ,${maxStr}] :: ${stdStr}`);
+    });
+
     // console.log(travel_times);
   }
 
@@ -285,9 +311,10 @@ export function sketch(p5: P5Instance) {
 
     updateAndDrawParticles();
 
-    // if (p5.frameCount % 300 === 0) {
-    //   doAnalysisPerFrame();
-    // }
+    if (p5.frameCount % 3000 === 0) {
+      console.log(`TIME: ${postProcessTimeValue(TIME).join(" - ")}`);
+      // doAnalysisPerFrame();
+    }
 
     // draw mouse position next to mouse
     p5.stroke(255,0,0);

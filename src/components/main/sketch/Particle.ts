@@ -13,6 +13,7 @@ export class Particle {
   readonly id: number;
   readonly spawnTime: number;
   readonly start: Goal;
+  readonly startPos: Vector;
   readonly goal: Goal;
   private readonly position: Vector;
   private goalPos: Vector;
@@ -34,7 +35,8 @@ export class Particle {
     this.spawnTime = spawnTime;
     this.start = start;
     this.goal = goal;
-    this.position = start.closestPosition(goal.randomPosition());
+    this.startPos = start.closestPosition(goal.randomPosition());
+    this.position = this.startPos.copy();
     this.goalPos = goal.closestPosition(this.position);
     this.heading = Vector.sub(this.goalPos, this.position).normalize();
     this.avgOtherParticle = new Vector(0, 0);
