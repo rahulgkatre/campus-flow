@@ -6,17 +6,25 @@ start_time = 0
 end_time = 86400
 
 #The various buildings, categorized by type
-housing = ["North Avenue North", "North Avenue South", "North Avenue East", "North Avenue West", "Towers Residence Hall", "Glenn Residence Hall"]
+#housing = ["North Avenue North", "North Avenue South", "North Avenue East", "North Avenue West", "Towers Residence Hall", "Glenn Residence Hall"]
 #housing = ["Housing1", "Housing2"]
+housing = ["culc"]
 
-borders = ["5th Street Bridge", "North Avenue Bridge", "Centennial Olympic Park Drive", "10th Street"]
+#borders = ["5th Street Bridge", "North Avenue Bridge", "Centennial Olympic Park Drive", "10th Street"]
 #borders = ["Border1", "Border2"]
+borders = []
+if len(borders) == 0:
+	borders = housing
 
-buildings = ["CULC", "Skiles", "Georgia Tech Tower", "CoC", "Howey", "Klaus", "Van Leer", "Georgia Tech Library", "Student Center"]
+#buildings = ["CULC", "Skiles", "Georgia Tech Tower", "CoC", "Howey", "Klaus", "Van Leer", "Georgia Tech Library", "Student Center"]
 #buildings = ["Building1", "Building2"]
+buildings = ["coc"]
 
-other = ["Bobby Dodd Stadium"]
+#other = ["Bobby Dodd Stadium"]
 #other = ["Other1", "Other2"]
+other = []
+if len(other) == 0:
+	other = buildings
 
 objects = [housing, borders, buildings, other]
 
@@ -29,37 +37,69 @@ objects = [housing, borders, buildings, other]
 #manual particle class generation.
 #Note that the values will get replaced by a single number, representing the number
 #of particles in each clss for the simulation.
-people = {"student": [True, 0.55, 6],
-          "professor": [True, 0.15, 3],
-          "faculty": [True, 0.15, 1],
-          "other": [False, 0.15, 0]}
+people = {"student": [True, 1, 0],
+          "professor": [False, 0, 0],
+          "faculty": [False, 0, 0],
+          "other": [False, 0, 0]}
+         # {"student": [True, 0.55, 6],
+         #  "professor": [True, 0.15, 3],
+         #  "faculty": [True, 0.15, 1],
+         #  "other": [False, 0.15, 0]}
+
+#Value for "campus_housing" key in parameters dictionary
+campus_housing = {"student": 1,
+                  "professor": 1,
+                  "faculty": 1,
+                  "other": 1}
+                 # {"student": 0.5,
+                 #  "professor": 0,
+                 #  "faculty": 0,
+                 #  "other": 0}
+
+#Value for "events_classes" key in parameters dictionary
+events_classes = {"student": {"housing": 0.5, 
+                              "borders": 0,
+                              "buildings": 0.5,
+                              "other": 0},
+                  "professor": {"housing": 0,
+                                "borders": 0,
+                                "buildings": 0.95,
+                                "other": 0.05},
+                  "faculty": {"housing": 0.01,
+                              "borders": 0,
+                              "buildings": 0.94,
+                              "other": 0.05},
+                  "other": {"housing": 0,
+                            "borders": 0,
+                            "buildings": 1,
+                            "other": 0}}
+                 # {"student": {"housing": 0.15, 
+                 #              "borders": 0,
+                 #              "buildings": 0.8,
+                 #              "other": 0.05},
+                 #  "professor": {"housing": 0,
+                 #                "borders": 0,
+                 #                "buildings": 0.95,
+                 #                "other": 0.05},
+                 #  "faculty": {"housing": 0.01,
+                 #              "borders": 0,
+                 #              "buildings": 0.94,
+                 #              "other": 0.05},
+                 #  "other": {"housing": 0,
+                 #            "borders": 0,
+                 #            "buildings": 1,
+                 #            "other": 0}}
 
 #The different parameters for schedule generation
-parameters = {"num_people": 10, #number of particles in simulation for automatic particle class generation
-              "auto_class": False, #generation of particle classes - True: automatic, False: manual. Note for automatic, percentage of particles in each class may not be exact, depending on the rounding of numbers in the calculation
-              "event_number": [1,5],
-              "min_len_event": 3000 #50 minutes
-              "max_walk_time": 1800 #30 minutes
-              "campus_housing": {"student": 0.5,
-                                 "professor": 0,
-                                 "faculty": 0,
-                                 "other": 0}, #probability of particle class living on-campus vs. off-campus
-              "events_classes": {"student": {"housing": 0.15,
-                                             "borders": 0,
-                                             "buildings": 0.8,
-                                             "other": 0.05},
-                                 "professor": {"housing": 0,
-                                               "borders": 0,
-                                               "buildings": 0.95,
-                                               "other": 0},
-                                 "faculty": {"housing": 0.01,
-                                             "borders": 0,
-                                             "buildings": 0.94,
-                                             "other": 0.05},
-                                 "other": {"housing": 0,
-                                           "borders": 0,
-                                           "buildings": 1,
-                                           "other": 0}}} #probability of event type for particle schedules based on particle class
+parameters = {"num_people": 50, #number of particles in simulation for automatic particle class generation
+              "auto_class": True, #generation of particle classes - True: automatic, False: manual. Note for automatic, percentage of particles in each class may not be exact, depending on the rounding of numbers in the calculation
+              "event_number": [1,3], #minimum and maximum number of events a particle can have in a day (min: 1, max: 3)
+              "min_len_event": round(50*(end_time - start_time)/1440), #Minimum duration of an event (50 minutes)
+              "max_walk_time": round(30*(end_time - start_time)/1440), #Maximum time it takes to get from one location to another (30 minutes)
+              "start_day": start_time + round(7*(end_time - start_time)/24), #Schedule cannot start earlier than this time (7 AM)
+              "end_day": end_time - round(2*(end_time - start_time)/24), #Schedule cannot end later than this time (10 PM)
+              "campus_housing": campus_housing, #probability of particle living on-campus vs. off-campus based on class
+              "events_classes": events_classes} #probability of event type for particle schedules based on particle class
 
 #Methods
 #Determine the number of particles for each class
@@ -109,10 +149,9 @@ def determine_events(schedule, num_event_range):
 def generate_start_and_end(schedule, on_campus, off_campus, campus_probability, t_start, t_end, min_len_event, max_walk_time):
 	for person in range(0, len(schedule)):
 		num_events = len(schedule[person]["particle_schedule"]["schedule_middle"])
-		sleep_time = round((t_end - t_start)/10)
 		schedule_length = num_events*min_len_event + (num_events+1)*max_walk_time
-		begin_time = random.randint(t_start + sleep_time, t_end - sleep_time - schedule_length)
-		end_time = random.randint(begin_time + schedule_length, t_end - sleep_time)
+		begin_time = random.randint(t_start, t_end - schedule_length)
+		end_time = random.randint(begin_time + schedule_length, t_end)
 		campus = random.random()
 		location = None
 		if campus <= campus_probability[schedule[person]["particle_class"]]:
@@ -156,15 +195,32 @@ def generate_events(schedule, locations, event_probability):
 				location = helper_generate_events(schedule, locations, event_probability, person)
 				while event == 0 and location == schedule[person]["particle_schedule"]["schedule_start"][0]:
 					location = helper_generate_events(schedule, locations, event_probability, person)
-				while event != 0 and location == event_list[event-1][0]:
+				while event > 0 and event < len(event_list)-1 and location == event_list[event-1][0]:
 					location = helper_generate_events(schedule, locations, event_probability, person)
-				while event == len(event_list)-1 and (location == event_list[event-1][0] or location == schedule[person]["particle_schedule"]["schedule_finish"][0]) :
-					location = helper_generate_events(schedule, locations, event_probability, person)
+				if event == len(event_list)-1:
+					if len(event_list)%2 == 0 and (len(locations[2]) == 1 and (len(locations[3]) == 1 and locations[2][0] == locations[3][0]) or (len(locations[0]) == 1 and len(locations[1]) == 1 and locations[0][0] == locations[1][0])):
+						event_list.pop(event)
+						continue
+					while location == event_list[event-1][0] or location == schedule[person]["particle_schedule"]["schedule_finish"][0]:
+						location = helper_generate_events(schedule, locations, event_probability, person)
 				event_list[event].append(location)
 
-
-def generate_times(schedule, t_start, t_end):
+#Generate the times of the events for each particle's schedule
+def generate_times(schedule, max_walk_time, min_length_event):
 	for person in range(0, len(schedule)):
+		event_list = schedule[person]["particle_schedule"]["schedule_middle"]
+		begin_time = schedule[person]["particle_schedule"]["schedule_start"][1]
+		end_time = schedule[person]["particle_schedule"]["schedule_finish"][1]
+		for event in range(0, len(event_list)):
+			t_low = begin_time
+			if event != 0:
+				t_low = event_list[event-1][1]+max_walk_time+min_length_event
+			t_high = end_time
+			if event != len(event_list)-1:
+				t_high = end_time - (len(event_list)-event)*(max_walk_time + min_length_event) + min_length_event
+			t = random.randint(t_low, t_high)
+			event_list[event].append(t)
+		schedule[person]["particle_schedule"]["schedule_finish"][1] = -1
 
 
 #Generate the schedule of each particle
@@ -174,9 +230,9 @@ def generate_schedule(people_classes, locations, t_start, t_end, parameters):
 	determine_classes(people_classes, dictionary["num_particles"], parameters["auto_class"])
 	generate_classes(dictionary["particles"], people_classes)
 	determine_events(dictionary["particles"], parameters["event_number"])
-	generate_start_and_end(dictionary["particles"], locations[0], locations[1], parameters["campus_housing"], t_start, t_end, parameters["min_len_event"], parameters["max_walk_time"])
+	generate_start_and_end(dictionary["particles"], locations[0], locations[1], parameters["campus_housing"], parameters["start_day"], parameters["end_day"], parameters["min_len_event"], parameters["max_walk_time"])
 	generate_events(dictionary["particles"], locations, parameters["events_classes"])
-	# generate_times(dictionary["particles"], t_start, t_end)
+	generate_times(dictionary["particles"], parameters["max_walk_time"], parameters["min_len_event"])
 	if dictionary["num_particles"] != len(dictionary["particles"]):
 		print("Error: There are particles missing. Do not proceed.")
 		return -1

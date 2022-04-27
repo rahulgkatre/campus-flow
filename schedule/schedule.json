@@ -1,0 +1,1197 @@
+{
+    "num_particles": 50,
+    "particles": [
+        {
+            "particle_id": 1,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    38774
+                ],
+                "schedule_middle": [
+                    [
+                        "Ferst",
+                        56616
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 2,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    34369
+                ],
+                "schedule_middle": [
+                    [
+                        "Ferst",
+                        42522
+                    ],
+                    [
+                        "IndustrialDesign",
+                        48918
+                    ],
+                    [
+                        "BungerHenry",
+                        53831
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 3,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    65647
+                ],
+                "schedule_middle": [
+                    [
+                        "BungerHenry",
+                        69005
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 4,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "NorthExit",
+                    42085
+                ],
+                "schedule_middle": [
+                    [
+                        "WestExit",
+                        55600
+                    ]
+                ],
+                "schedule_finish": [
+                    "NorthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 5,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "NorthExit",
+                    28667
+                ],
+                "schedule_middle": [
+                    [
+                        "SouthExit",
+                        43892
+                    ],
+                    [
+                        "VanLeer",
+                        51919
+                    ],
+                    [
+                        "Skiles",
+                        62081
+                    ]
+                ],
+                "schedule_finish": [
+                    "NorthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 6,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    34813
+                ],
+                "schedule_middle": [
+                    [
+                        "VanLeer",
+                        51721
+                    ],
+                    [
+                        "BungerHenry",
+                        63410
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 7,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    32053
+                ],
+                "schedule_middle": [
+                    [
+                        "NorthExit",
+                        59362
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 8,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "NorthExit",
+                    32856
+                ],
+                "schedule_middle": [
+                    [
+                        "BungerHenry",
+                        35764
+                    ],
+                    [
+                        "CulcLibrary",
+                        48396
+                    ],
+                    [
+                        "WestExit",
+                        53780
+                    ]
+                ],
+                "schedule_finish": [
+                    "NorthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 9,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    63580
+                ],
+                "schedule_middle": [
+                    [
+                        "NorthExit",
+                        71687
+                    ],
+                    [
+                        "WestExit",
+                        78031
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 10,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "NorthExit",
+                    59915
+                ],
+                "schedule_middle": [
+                    [
+                        "Ferst",
+                        61205
+                    ],
+                    [
+                        "SouthExit",
+                        68691
+                    ],
+                    [
+                        "Ferst",
+                        74596
+                    ]
+                ],
+                "schedule_finish": [
+                    "NorthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 11,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    36099
+                ],
+                "schedule_middle": [
+                    [
+                        "Skiles",
+                        43370
+                    ],
+                    [
+                        "Ferst",
+                        49495
+                    ],
+                    [
+                        "NorthExit",
+                        55754
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 12,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    39108
+                ],
+                "schedule_middle": [
+                    [
+                        "IndustrialDesign",
+                        42078
+                    ],
+                    [
+                        "WestExit",
+                        51940
+                    ],
+                    [
+                        "CulcLibrary",
+                        57979
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 13,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    57217
+                ],
+                "schedule_middle": [
+                    [
+                        "CulcLibrary",
+                        64004
+                    ],
+                    [
+                        "WestExit",
+                        69045
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 14,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "NorthExit",
+                    45503
+                ],
+                "schedule_middle": [
+                    [
+                        "EastExit",
+                        46008
+                    ]
+                ],
+                "schedule_finish": [
+                    "NorthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 15,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    36291
+                ],
+                "schedule_middle": [
+                    [
+                        "IndustrialDesign",
+                        44793
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 16,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "WestExit",
+                    55428
+                ],
+                "schedule_middle": [
+                    [
+                        "NorthExit",
+                        56007
+                    ]
+                ],
+                "schedule_finish": [
+                    "WestExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 17,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "WestExit",
+                    30313
+                ],
+                "schedule_middle": [
+                    [
+                        "IndustrialDesign",
+                        36662
+                    ],
+                    [
+                        "Skiles",
+                        53304
+                    ],
+                    [
+                        "IndustrialDesign",
+                        62539
+                    ]
+                ],
+                "schedule_finish": [
+                    "WestExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 18,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "NorthExit",
+                    53244
+                ],
+                "schedule_middle": [
+                    [
+                        "CulcLibrary",
+                        66807
+                    ]
+                ],
+                "schedule_finish": [
+                    "NorthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 19,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "NorthExit",
+                    57503
+                ],
+                "schedule_middle": [
+                    [
+                        "Skiles",
+                        60109
+                    ],
+                    [
+                        "WestExit",
+                        69616
+                    ]
+                ],
+                "schedule_finish": [
+                    "NorthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 20,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "WestExit",
+                    50458
+                ],
+                "schedule_middle": [
+                    [
+                        "IndustrialDesign",
+                        59147
+                    ],
+                    [
+                        "VanLeer",
+                        63962
+                    ],
+                    [
+                        "IndustrialDesign",
+                        69083
+                    ]
+                ],
+                "schedule_finish": [
+                    "WestExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 21,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "WestExit",
+                    66069
+                ],
+                "schedule_middle": [
+                    [
+                        "BungerHenry",
+                        68648
+                    ],
+                    [
+                        "VanLeer",
+                        76405
+                    ]
+                ],
+                "schedule_finish": [
+                    "WestExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 22,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "NorthExit",
+                    52816
+                ],
+                "schedule_middle": [
+                    [
+                        "VanLeer",
+                        60436
+                    ],
+                    [
+                        "Ferst",
+                        66221
+                    ],
+                    [
+                        "EastExit",
+                        72458
+                    ]
+                ],
+                "schedule_finish": [
+                    "NorthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 23,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    44137
+                ],
+                "schedule_middle": [
+                    [
+                        "WestExit",
+                        67057
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 24,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    41320
+                ],
+                "schedule_middle": [
+                    [
+                        "EastExit",
+                        44754
+                    ],
+                    [
+                        "Skiles",
+                        49885
+                    ],
+                    [
+                        "EastExit",
+                        61615
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 25,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    65425
+                ],
+                "schedule_middle": [
+                    [
+                        "WestExit",
+                        68565
+                    ],
+                    [
+                        "EastExit",
+                        73917
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 26,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    53040
+                ],
+                "schedule_middle": [
+                    [
+                        "WestExit",
+                        68156
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 27,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    51326
+                ],
+                "schedule_middle": [
+                    [
+                        "Skiles",
+                        56291
+                    ],
+                    [
+                        "Student Center",
+                        61896
+                    ],
+                    [
+                        "NorthExit",
+                        68489
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 28,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    31809
+                ],
+                "schedule_middle": [
+                    [
+                        "Student Center",
+                        45896
+                    ],
+                    [
+                        "Ferst",
+                        50728
+                    ],
+                    [
+                        "BungerHenry",
+                        55627
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 29,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "NorthExit",
+                    45324
+                ],
+                "schedule_middle": [
+                    [
+                        "VanLeer",
+                        54248
+                    ]
+                ],
+                "schedule_finish": [
+                    "NorthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 30,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    36288
+                ],
+                "schedule_middle": [
+                    [
+                        "WestExit",
+                        61408
+                    ],
+                    [
+                        "CulcLibrary",
+                        73385
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 31,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    42737
+                ],
+                "schedule_middle": [
+                    [
+                        "IndustrialDesign",
+                        61222
+                    ],
+                    [
+                        "WestExit",
+                        68322
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 32,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    36427
+                ],
+                "schedule_middle": [
+                    [
+                        "SouthExit",
+                        46211
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 33,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    32329
+                ],
+                "schedule_middle": [
+                    [
+                        "Student Center",
+                        49015
+                    ],
+                    [
+                        "Skiles",
+                        58883
+                    ],
+                    [
+                        "VanLeer",
+                        70755
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 34,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "WestExit",
+                    54809
+                ],
+                "schedule_middle": [
+                    [
+                        "EastExit",
+                        68893
+                    ]
+                ],
+                "schedule_finish": [
+                    "WestExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 35,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    58896
+                ],
+                "schedule_middle": [
+                    [
+                        "Ferst",
+                        59756
+                    ],
+                    [
+                        "SouthExit",
+                        69945
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 36,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    42290
+                ],
+                "schedule_middle": [
+                    [
+                        "IndustrialDesign",
+                        45541
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 37,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    34665
+                ],
+                "schedule_middle": [
+                    [
+                        "NorthExit",
+                        35980
+                    ],
+                    [
+                        "Student Center",
+                        43343
+                    ],
+                    [
+                        "CulcLibrary",
+                        51863
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 38,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    35811
+                ],
+                "schedule_middle": [
+                    [
+                        "IndustrialDesign",
+                        36108
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 39,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    58953
+                ],
+                "schedule_middle": [
+                    [
+                        "CulcLibrary",
+                        62859
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 40,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "WestExit",
+                    58607
+                ],
+                "schedule_middle": [
+                    [
+                        "CulcLibrary",
+                        58963
+                    ],
+                    [
+                        "IndustrialDesign",
+                        66188
+                    ],
+                    [
+                        "EastExit",
+                        73846
+                    ]
+                ],
+                "schedule_finish": [
+                    "WestExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 41,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    26596
+                ],
+                "schedule_middle": [
+                    [
+                        "NorthExit",
+                        40055
+                    ],
+                    [
+                        "IndustrialDesign",
+                        45421
+                    ],
+                    [
+                        "Student Center",
+                        50420
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 42,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "WestExit",
+                    49644
+                ],
+                "schedule_middle": [
+                    [
+                        "NorthExit",
+                        53618
+                    ],
+                    [
+                        "Student Center",
+                        65684
+                    ]
+                ],
+                "schedule_finish": [
+                    "WestExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 43,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "SouthExit",
+                    67501
+                ],
+                "schedule_middle": [
+                    [
+                        "Skiles",
+                        73907
+                    ]
+                ],
+                "schedule_finish": [
+                    "SouthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 44,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "WestExit",
+                    42842
+                ],
+                "schedule_middle": [
+                    [
+                        "EastExit",
+                        43721
+                    ],
+                    [
+                        "NorthExit",
+                        55185
+                    ]
+                ],
+                "schedule_finish": [
+                    "WestExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 45,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    46438
+                ],
+                "schedule_middle": [
+                    [
+                        "WestExit",
+                        49538
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 46,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    58389
+                ],
+                "schedule_middle": [
+                    [
+                        "Skiles",
+                        63029
+                    ],
+                    [
+                        "BungerHenry",
+                        68219
+                    ],
+                    [
+                        "CulcLibrary",
+                        74084
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 47,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "WestExit",
+                    50710
+                ],
+                "schedule_middle": [
+                    [
+                        "IndustrialDesign",
+                        54167
+                    ],
+                    [
+                        "NorthExit",
+                        62199
+                    ]
+                ],
+                "schedule_finish": [
+                    "WestExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 48,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "NorthExit",
+                    26521
+                ],
+                "schedule_middle": [
+                    [
+                        "EastExit",
+                        30534
+                    ],
+                    [
+                        "VanLeer",
+                        40324
+                    ]
+                ],
+                "schedule_finish": [
+                    "NorthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 49,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "NorthExit",
+                    72171
+                ],
+                "schedule_middle": [
+                    [
+                        "IndustrialDesign",
+                        74651
+                    ]
+                ],
+                "schedule_finish": [
+                    "NorthExit",
+                    -1
+                ]
+            }
+        },
+        {
+            "particle_id": 50,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    33504
+                ],
+                "schedule_middle": [
+                    [
+                        "Skiles",
+                        45541
+                    ],
+                    [
+                        "VanLeer",
+                        58343
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        }
+    ]
+}
