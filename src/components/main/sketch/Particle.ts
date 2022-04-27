@@ -22,6 +22,8 @@ export class Particle {
   private movingAvgIndex: number;
   private framesSameGoal: number;
 
+  private curled: boolean;
+
   constructor(pos: Vector, goal: Goal) {
     this.goal = goal;
     this.position = pos;
@@ -33,6 +35,7 @@ export class Particle {
     this.movingAvgHeadings = [];
     this.movingAvgIndex = 0;
     this.framesSameGoal = 0;
+    this.curled = false;
     this.resetMovingAvgPositions();
     this.resetMovingAvgHeadings();
   }
@@ -50,12 +53,19 @@ export class Particle {
     }
   }
   evaluateForces(field: VectorField): boolean { // returns true if goal reached
-    this.goalPos = this.goal.closestPosition(this.position);
-    const distToGoal = this.position.dist(this.goalPos);
+    // this.goalPos = this.goal.closestPosition(this.position);
+    let distToGoal = this.position.dist(this.goalPos);
+    if (distToGoal < Particle.GOAL_REACHED_DIST*20) {
+      this.goalPos = this.goal.closestPosition(this.position);
+      this.resetMovingAvgPositions();
+      distToGoal = this.position.dist(this.goalPos);
+    }
     if (distToGoal <= Particle.GOAL_REACHED_DIST) {
       this.heading.mult(0);
       return true;
     }
+    let turnResistance = Particle.RESISTANCE_TO_TURN;
+
     const avoidOthersHeading = this.avgOtherParticle;//.normalize();
 
     const fieldForce = field.getForce(this.position);
@@ -64,27 +74,40 @@ export class Particle {
     fieldForce.setMag(Math.pow(fieldMag, 0.75));
 
     const toGoalHeading = Vector.sub(this.goalPos, this.position).normalize();
+
+    let goalEffect = 1.5;
+
     const fieldForceAtHeading = field.getForce(this.position.copy().add(toGoalHeading));
     fieldForceAtHeading.setMag(Math.pow(fieldForceAtHeading.mag(), 0.75));
 
-    const fieldEffect = distToGoal > 100 ? 2 : (distToGoal > Particle.GOAL_REACHED_DIST*3 ? 1 : 0.5);
+    let fieldEffect = distToGoal > 100 ? 2 : (distToGoal > Particle.GOAL_REACHED_DIST*3 ? 1 : 0.5);
 
     const curlForce = this.goal.curlField.getForce(this.position);
     const curlMag = curlForce.mag();
-    if (fieldMag <= 0.2) {
-      // curlForce.setMag(0);
+    let curlEffect = 0.0;
+    if (curlMag >= 0.2 && distToGoal < Particle.GOAL_REACHED_DIST*20) {
+      goalEffect *= 0.05;
+      fieldEffect *= 0.1;
+      curlEffect = 0.5;
+      // console.log(distToGoal);
+      // turnResistance = Math.pow(turnResistance, 0.3);
+    //   if (!this.curled) {
+    //     this.curled = true;
+    //     this.heading.set(curlForce).normalize();
+    //     // fieldForceAtHeading.set(curlForce);
+    //   }
+    // } else {
+    //   this.curled = false;
     }
-    const curlEffect = 0.25;
 
     const desiredHeading = new Vector(0,0)
-        .add(toGoalHeading.mult(2/(fieldForce.mag()+0.00001)))
-        .normalize()
+        .add(toGoalHeading.mult(goalEffect))
         .add(avoidOthersHeading.mult(this.otherParticleCount*4.5))
         .add(fieldForce.mult(fieldEffect))
         .add(fieldForceAtHeading.mult(fieldEffect))
-        // .add(curlForce.mult(curlEffect))
+        .add(curlForce.mult(curlEffect))
         .normalize();
-    this.heading.mult(Particle.RESISTANCE_TO_TURN).add(desiredHeading.mult(1 - Particle.RESISTANCE_TO_TURN)).normalize();
+    this.heading.mult(turnResistance).add(desiredHeading.mult(1 - turnResistance)).normalize();
     return false;
   }
   resetOtherParticleAvoidance() {

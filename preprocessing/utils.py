@@ -26,13 +26,13 @@ def get_color_mask(color, img):
     '''
     return ((img[:, :, 0] == color[0]) & (img[:, :, 1] == color[1]) & (img[:, :, 2] == color[2]))
 
-def plot_vector_field(dy, dx, center, lim):
+def plot_vector_field(dy, dx, center, lim, shape=(512,512)):
     '''
     Plot the vector field at a given center with bounds of [center-lim,center+lim] in both x,y directions
     '''
 
-    pixels = np.linspace(0, 512, 512, endpoint=False).astype(int)
-    x, y = np.meshgrid(pixels, pixels)
+    # pixels = np.linspace(0, *shape, endpoint=False).astype(int)
+    x, y = np.meshgrid(np.arange(shape[1],dtype=int), np.arange(shape[0],dtype=int))
 
     plt.figure(figsize=(32,32))
 
@@ -41,12 +41,12 @@ def plot_vector_field(dy, dx, center, lim):
     plt.axis('off')
     plt.show()
 
-def plot_vector_field_color(dy, dx, center, lim):
+def plot_vector_field_color(dy, dx, center, lim, shape=(512,512)):
     '''
     Plot the vector field at a given center with bounds of [center-lim,center+lim] in both x,y directions
     '''
 
-    pixels = np.linspace(0, 512, 512, endpoint=False).astype(int)
+    pixels = np.linspace(0, *shape, endpoint=False).astype(int)
     x, y = np.meshgrid(pixels, pixels)
 
     plt.figure(figsize=(32,32))
@@ -90,8 +90,8 @@ def get_2d_vec_str(vecMatrix):
     Convert a matrix of vectors to a string
     '''
     vecStr = ''
-    for y in range(0,512):
-        for x in range(0,512):
+    for y in range(0,vecMatrix.shape[0]):
+        for x in range(0,vecMatrix.shape[1]):
             vecStr += f'[{vecMatrix[y,x,0]:.2f},{vecMatrix[y,x,1]:.2f}] '
         vecStr += '\n'
     return vecStr
