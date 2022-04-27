@@ -17,7 +17,22 @@ MAP_COLOR_ELEMENTS = [
 ]
 NULL_COLOR = np.array([0, 0, 0])
 
-MAP_BUILDING_ELEMENTS = [
+basic_buildings = [
     MapBuildingElement('coc', [np.array([55, 90]), np.array([230, 135])]),
     MapBuildingElement('culc', [np.array([235, 370]), np.array([440, 420])]),
 ]
+
+campus_buildings = [
+    MapBuildingElement('Ferst', [np.array([14, 520]), np.array([83, 383])]),
+    MapBuildingElement('Student Center', [np.array([51, 636]), np.array([51, 849]), np.array([290, 809]), np.array([272, 938])]),
+    MapBuildingElement('Skiles', [np.array([727, 953]), np.array([776, 813]), np.array([916, 813])]),
+    MapBuildingElement('CulcLibrary', [np.array([776, 718]), np.array([972, 718]), np.array([972, 569]), np.array([748, 368])]),
+    MapBuildingElement('VanLeer', [np.array([521, 198]), np.array([702, 174])]),
+    MapBuildingElement('IndustrialDesign', [np.array([852, 164]), np.array([744, 63])]),
+    MapBuildingElement('BungerHenry', [np.array([301, 106]), np.array([368, 201]), np.array([248, 315]), np.array([333, 315])]),
+    MapBuildingElement('NorthExit', [np.array([41, 2]), np.array([400, 2]), np.array([734, 0])]),
+    MapBuildingElement('EastExit', [np.array([1028, 168]), np.array([1028, 352]), np.array([1028, 765])]),
+    MapBuildingElement('SouthExit', [np.array([665, 1022]), np.array([272, 1022]), np.array([14, 1022])]),
+]
+
+MAP_BUILDING_ELEMENTS = campus_buildings
