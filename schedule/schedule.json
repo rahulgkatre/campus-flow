@@ -2,17 +2,41 @@
     "num_particles": 50,
     "particles": [
         {
+            "particle_id": 0,
+            "particle_class": "student",
+            "particle_schedule": {
+                "schedule_start": [
+                    "EastExit",
+                    37407
+                ],
+                "schedule_middle": [
+                    [
+                        "BungerHenry",
+                        48723
+                    ],
+                    [
+                        "Student Center",
+                        55995
+                    ]
+                ],
+                "schedule_finish": [
+                    "EastExit",
+                    -1
+                ]
+            }
+        },
+        {
             "particle_id": 1,
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
                     "EastExit",
-                    38774
+                    57946
                 ],
                 "schedule_middle": [
                     [
-                        "Ferst",
-                        56616
+                        "Skiles",
+                        64467
                     ]
                 ],
                 "schedule_finish": [
@@ -26,25 +50,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "EastExit",
-                    34369
+                    "WestExit",
+                    27328
                 ],
                 "schedule_middle": [
                     [
-                        "Ferst",
-                        42522
+                        "Student Center",
+                        31057
                     ],
                     [
-                        "IndustrialDesign",
-                        48918
-                    ],
-                    [
-                        "BungerHenry",
-                        53831
+                        "CulcLibrary",
+                        70738
                     ]
                 ],
                 "schedule_finish": [
-                    "EastExit",
+                    "WestExit",
                     -1
                 ]
             }
@@ -54,17 +74,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    65647
+                    "EastExit",
+                    43019
                 ],
                 "schedule_middle": [
                     [
-                        "BungerHenry",
-                        69005
+                        "CulcLibrary",
+                        46683
+                    ],
+                    [
+                        "Student Center",
+                        55030
+                    ],
+                    [
+                        "IndustrialDesign",
+                        64808
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "EastExit",
                     -1
                 ]
             }
@@ -75,12 +103,20 @@
             "particle_schedule": {
                 "schedule_start": [
                     "NorthExit",
-                    42085
+                    50946
                 ],
                 "schedule_middle": [
                     [
-                        "WestExit",
-                        55600
+                        "VanLeer",
+                        59898
+                    ],
+                    [
+                        "Skiles",
+                        65640
+                    ],
+                    [
+                        "Student Center",
+                        73729
                     ]
                 ],
                 "schedule_finish": [
@@ -94,25 +130,17 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "NorthExit",
-                    28667
+                    "EastExit",
+                    60647
                 ],
                 "schedule_middle": [
                     [
-                        "SouthExit",
-                        43892
-                    ],
-                    [
-                        "VanLeer",
-                        51919
-                    ],
-                    [
-                        "Skiles",
-                        62081
+                        "CulcLibrary",
+                        70292
                     ]
                 ],
                 "schedule_finish": [
-                    "NorthExit",
+                    "EastExit",
                     -1
                 ]
             }
@@ -122,21 +150,17 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "EastExit",
-                    34813
+                    "NorthExit",
+                    62583
                 ],
                 "schedule_middle": [
                     [
-                        "VanLeer",
-                        51721
-                    ],
-                    [
-                        "BungerHenry",
-                        63410
+                        "Student Center",
+                        63766
                     ]
                 ],
                 "schedule_finish": [
-                    "EastExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -146,17 +170,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "EastExit",
-                    32053
+                    "NorthExit",
+                    60902
                 ],
                 "schedule_middle": [
                     [
-                        "NorthExit",
-                        59362
+                        "VanLeer",
+                        67191
+                    ],
+                    [
+                        "Student Center",
+                        72468
                     ]
                 ],
                 "schedule_finish": [
-                    "EastExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -167,20 +195,16 @@
             "particle_schedule": {
                 "schedule_start": [
                     "NorthExit",
-                    32856
+                    30607
                 ],
                 "schedule_middle": [
                     [
-                        "BungerHenry",
-                        35764
-                    ],
-                    [
                         "CulcLibrary",
-                        48396
+                        38459
                     ],
                     [
-                        "WestExit",
-                        53780
+                        "IndustrialDesign",
+                        48346
                     ]
                 ],
                 "schedule_finish": [
@@ -194,21 +218,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "EastExit",
-                    63580
+                    "WestExit",
+                    62687
                 ],
                 "schedule_middle": [
                     [
-                        "NorthExit",
-                        71687
+                        "VanLeer",
+                        69173
                     ],
                     [
-                        "WestExit",
-                        78031
+                        "Skiles",
+                        76403
                     ]
                 ],
                 "schedule_finish": [
-                    "EastExit",
+                    "WestExit",
                     -1
                 ]
             }
@@ -219,20 +243,20 @@
             "particle_schedule": {
                 "schedule_start": [
                     "NorthExit",
-                    59915
+                    30843
                 ],
                 "schedule_middle": [
                     [
-                        "Ferst",
-                        61205
+                        "BungerHenry",
+                        50636
                     ],
                     [
-                        "SouthExit",
-                        68691
+                        "CulcLibrary",
+                        56554
                     ],
                     [
-                        "Ferst",
-                        74596
+                        "Skiles",
+                        62067
                     ]
                 ],
                 "schedule_finish": [
@@ -246,25 +270,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    36099
+                    "WestExit",
+                    55627
                 ],
                 "schedule_middle": [
                     [
                         "Skiles",
-                        43370
+                        58271
                     ],
                     [
-                        "Ferst",
-                        49495
-                    ],
-                    [
-                        "NorthExit",
-                        55754
+                        "Student Center",
+                        67108
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "WestExit",
                     -1
                 ]
             }
@@ -274,25 +294,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    39108
+                    "EastExit",
+                    43176
                 ],
                 "schedule_middle": [
                     [
-                        "IndustrialDesign",
-                        42078
+                        "BungerHenry",
+                        50382
                     ],
                     [
-                        "WestExit",
-                        51940
+                        "Student Center",
+                        56792
                     ],
                     [
-                        "CulcLibrary",
-                        57979
+                        "Skiles",
+                        64476
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "EastExit",
                     -1
                 ]
             }
@@ -302,21 +322,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    57217
+                    "NorthExit",
+                    45704
                 ],
                 "schedule_middle": [
                     [
-                        "CulcLibrary",
-                        64004
+                        "IndustrialDesign",
+                        59549
                     ],
                     [
-                        "WestExit",
-                        69045
+                        "VanLeer",
+                        65776
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -326,17 +346,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "NorthExit",
-                    45503
+                    "EastExit",
+                    46213
                 ],
                 "schedule_middle": [
                     [
-                        "EastExit",
-                        46008
+                        "Ferst",
+                        53109
+                    ],
+                    [
+                        "IndustrialDesign",
+                        57935
+                    ],
+                    [
+                        "Skiles",
+                        62998
                     ]
                 ],
                 "schedule_finish": [
-                    "NorthExit",
+                    "EastExit",
                     -1
                 ]
             }
@@ -346,17 +374,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    36291
+                    "NorthExit",
+                    62196
                 ],
                 "schedule_middle": [
                     [
-                        "IndustrialDesign",
-                        44793
+                        "Skiles",
+                        66782
+                    ],
+                    [
+                        "Ferst",
+                        71794
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -367,12 +399,12 @@
             "particle_schedule": {
                 "schedule_start": [
                     "WestExit",
-                    55428
+                    26105
                 ],
                 "schedule_middle": [
                     [
-                        "NorthExit",
-                        56007
+                        "Skiles",
+                        57873
                     ]
                 ],
                 "schedule_finish": [
@@ -387,20 +419,12 @@
             "particle_schedule": {
                 "schedule_start": [
                     "WestExit",
-                    30313
+                    49177
                 ],
                 "schedule_middle": [
                     [
-                        "IndustrialDesign",
-                        36662
-                    ],
-                    [
-                        "Skiles",
-                        53304
-                    ],
-                    [
-                        "IndustrialDesign",
-                        62539
+                        "CulcLibrary",
+                        55488
                     ]
                 ],
                 "schedule_finish": [
@@ -414,17 +438,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "NorthExit",
-                    53244
+                    "EastExit",
+                    44887
                 ],
                 "schedule_middle": [
                     [
-                        "CulcLibrary",
-                        66807
+                        "BungerHenry",
+                        59738
+                    ],
+                    [
+                        "VanLeer",
+                        67413
                     ]
                 ],
                 "schedule_finish": [
-                    "NorthExit",
+                    "EastExit",
                     -1
                 ]
             }
@@ -434,21 +462,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "NorthExit",
-                    57503
+                    "WestExit",
+                    47657
                 ],
                 "schedule_middle": [
                     [
-                        "Skiles",
-                        60109
+                        "Ferst",
+                        48904
                     ],
                     [
-                        "WestExit",
-                        69616
+                        "VanLeer",
+                        53837
                     ]
                 ],
                 "schedule_finish": [
-                    "NorthExit",
+                    "WestExit",
                     -1
                 ]
             }
@@ -458,25 +486,17 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "WestExit",
-                    50458
+                    "NorthExit",
+                    46487
                 ],
                 "schedule_middle": [
                     [
                         "IndustrialDesign",
-                        59147
-                    ],
-                    [
-                        "VanLeer",
-                        63962
-                    ],
-                    [
-                        "IndustrialDesign",
-                        69083
+                        47384
                     ]
                 ],
                 "schedule_finish": [
-                    "WestExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -486,21 +506,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "WestExit",
-                    66069
+                    "NorthExit",
+                    36894
                 ],
                 "schedule_middle": [
                     [
-                        "BungerHenry",
-                        68648
+                        "VanLeer",
+                        39271
                     ],
                     [
-                        "VanLeer",
-                        76405
+                        "BungerHenry",
+                        44760
+                    ],
+                    [
+                        "CulcLibrary",
+                        50708
                     ]
                 ],
                 "schedule_finish": [
-                    "WestExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -510,25 +534,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "NorthExit",
-                    52816
+                    "EastExit",
+                    32897
                 ],
                 "schedule_middle": [
                     [
-                        "VanLeer",
-                        60436
+                        "Student Center",
+                        40261
                     ],
                     [
-                        "Ferst",
-                        66221
+                        "BungerHenry",
+                        46794
                     ],
                     [
-                        "EastExit",
-                        72458
+                        "CulcLibrary",
+                        55765
                     ]
                 ],
                 "schedule_finish": [
-                    "NorthExit",
+                    "EastExit",
                     -1
                 ]
             }
@@ -538,17 +562,17 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    44137
+                    "NorthExit",
+                    39586
                 ],
                 "schedule_middle": [
                     [
-                        "WestExit",
-                        67057
+                        "Student Center",
+                        54007
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -558,25 +582,17 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    41320
+                    "NorthExit",
+                    60896
                 ],
                 "schedule_middle": [
                     [
-                        "EastExit",
-                        44754
-                    ],
-                    [
-                        "Skiles",
-                        49885
-                    ],
-                    [
-                        "EastExit",
-                        61615
+                        "Ferst",
+                        67898
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -586,21 +602,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    65425
+                    "WestExit",
+                    41113
                 ],
                 "schedule_middle": [
                     [
-                        "WestExit",
-                        68565
+                        "BungerHenry",
+                        45003
                     ],
                     [
-                        "EastExit",
-                        73917
+                        "CulcLibrary",
+                        51824
+                    ],
+                    [
+                        "IndustrialDesign",
+                        56723
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "WestExit",
                     -1
                 ]
             }
@@ -611,12 +631,16 @@
             "particle_schedule": {
                 "schedule_start": [
                     "EastExit",
-                    53040
+                    29036
                 ],
                 "schedule_middle": [
                     [
-                        "WestExit",
-                        68156
+                        "Student Center",
+                        41963
+                    ],
+                    [
+                        "Ferst",
+                        47602
                     ]
                 ],
                 "schedule_finish": [
@@ -630,25 +654,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "EastExit",
-                    51326
+                    "NorthExit",
+                    37856
                 ],
                 "schedule_middle": [
                     [
-                        "Skiles",
-                        56291
+                        "BungerHenry",
+                        43810
                     ],
                     [
-                        "Student Center",
-                        61896
-                    ],
-                    [
-                        "NorthExit",
-                        68489
+                        "Ferst",
+                        48883
                     ]
                 ],
                 "schedule_finish": [
-                    "EastExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -658,25 +678,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    31809
+                    "NorthExit",
+                    59433
                 ],
                 "schedule_middle": [
                     [
-                        "Student Center",
-                        45896
-                    ],
-                    [
                         "Ferst",
-                        50728
+                        64024
                     ],
                     [
-                        "BungerHenry",
-                        55627
+                        "VanLeer",
+                        70763
+                    ],
+                    [
+                        "Skiles",
+                        77364
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -686,17 +706,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "NorthExit",
-                    45324
+                    "SouthExit",
+                    53911
                 ],
                 "schedule_middle": [
                     [
-                        "VanLeer",
-                        54248
+                        "BungerHenry",
+                        56489
+                    ],
+                    [
+                        "IndustrialDesign",
+                        63441
                     ]
                 ],
                 "schedule_finish": [
-                    "NorthExit",
+                    "SouthExit",
                     -1
                 ]
             }
@@ -706,21 +730,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    36288
+                    "NorthExit",
+                    31195
                 ],
                 "schedule_middle": [
                     [
-                        "WestExit",
-                        61408
+                        "IndustrialDesign",
+                        60009
+                    ],
+                    [
+                        "VanLeer",
+                        65338
                     ],
                     [
                         "CulcLibrary",
-                        73385
+                        70326
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -730,21 +758,17 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "EastExit",
-                    42737
+                    "SouthExit",
+                    66741
                 ],
                 "schedule_middle": [
                     [
-                        "IndustrialDesign",
-                        61222
-                    ],
-                    [
-                        "WestExit",
-                        68322
+                        "Student Center",
+                        67529
                     ]
                 ],
                 "schedule_finish": [
-                    "EastExit",
+                    "SouthExit",
                     -1
                 ]
             }
@@ -754,17 +778,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "EastExit",
-                    36427
+                    "WestExit",
+                    62920
                 ],
                 "schedule_middle": [
                     [
-                        "SouthExit",
-                        46211
+                        "CulcLibrary",
+                        65947
+                    ],
+                    [
+                        "Skiles",
+                        72920
                     ]
                 ],
                 "schedule_finish": [
-                    "EastExit",
+                    "WestExit",
                     -1
                 ]
             }
@@ -774,25 +802,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    32329
+                    "NorthExit",
+                    52864
                 ],
                 "schedule_middle": [
                     [
-                        "Student Center",
-                        49015
+                        "VanLeer",
+                        55873
                     ],
                     [
                         "Skiles",
-                        58883
+                        67326
                     ],
                     [
-                        "VanLeer",
-                        70755
+                        "BungerHenry",
+                        72700
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -802,17 +830,17 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "WestExit",
-                    54809
+                    "EastExit",
+                    55431
                 ],
                 "schedule_middle": [
                     [
-                        "EastExit",
-                        68893
+                        "BungerHenry",
+                        56638
                     ]
                 ],
                 "schedule_finish": [
-                    "WestExit",
+                    "EastExit",
                     -1
                 ]
             }
@@ -823,16 +851,16 @@
             "particle_schedule": {
                 "schedule_start": [
                     "EastExit",
-                    58896
+                    66148
                 ],
                 "schedule_middle": [
                     [
-                        "Ferst",
-                        59756
+                        "Student Center",
+                        69555
                     ],
                     [
-                        "SouthExit",
-                        69945
+                        "CulcLibrary",
+                        75467
                     ]
                 ],
                 "schedule_finish": [
@@ -847,12 +875,16 @@
             "particle_schedule": {
                 "schedule_start": [
                     "SouthExit",
-                    42290
+                    66834
                 ],
                 "schedule_middle": [
                     [
-                        "IndustrialDesign",
-                        45541
+                        "Ferst",
+                        70145
+                    ],
+                    [
+                        "Skiles",
+                        78190
                     ]
                 ],
                 "schedule_finish": [
@@ -866,25 +898,17 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    34665
+                    "WestExit",
+                    39634
                 ],
                 "schedule_middle": [
                     [
-                        "NorthExit",
-                        35980
-                    ],
-                    [
-                        "Student Center",
-                        43343
-                    ],
-                    [
-                        "CulcLibrary",
-                        51863
+                        "Skiles",
+                        42072
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "WestExit",
                     -1
                 ]
             }
@@ -894,17 +918,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    35811
+                    "EastExit",
+                    37106
                 ],
                 "schedule_middle": [
                     [
-                        "IndustrialDesign",
-                        36108
+                        "BungerHenry",
+                        38978
+                    ],
+                    [
+                        "VanLeer",
+                        47320
+                    ],
+                    [
+                        "BungerHenry",
+                        55696
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "EastExit",
                     -1
                 ]
             }
@@ -915,12 +947,16 @@
             "particle_schedule": {
                 "schedule_start": [
                     "SouthExit",
-                    58953
+                    58897
                 ],
                 "schedule_middle": [
                     [
-                        "CulcLibrary",
-                        62859
+                        "BungerHenry",
+                        64312
+                    ],
+                    [
+                        "Student Center",
+                        69284
                     ]
                 ],
                 "schedule_finish": [
@@ -935,20 +971,12 @@
             "particle_schedule": {
                 "schedule_start": [
                     "WestExit",
-                    58607
+                    47347
                 ],
                 "schedule_middle": [
                     [
-                        "CulcLibrary",
-                        58963
-                    ],
-                    [
-                        "IndustrialDesign",
-                        66188
-                    ],
-                    [
-                        "EastExit",
-                        73846
+                        "Ferst",
+                        48890
                     ]
                 ],
                 "schedule_finish": [
@@ -962,25 +990,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "EastExit",
-                    26596
+                    "NorthExit",
+                    48617
                 ],
                 "schedule_middle": [
                     [
-                        "NorthExit",
-                        40055
+                        "VanLeer",
+                        59188
                     ],
                     [
                         "IndustrialDesign",
-                        45421
-                    ],
-                    [
-                        "Student Center",
-                        50420
+                        69508
                     ]
                 ],
                 "schedule_finish": [
-                    "EastExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -991,16 +1015,12 @@
             "particle_schedule": {
                 "schedule_start": [
                     "WestExit",
-                    49644
+                    45672
                 ],
                 "schedule_middle": [
                     [
-                        "NorthExit",
-                        53618
-                    ],
-                    [
                         "Student Center",
-                        65684
+                        50788
                     ]
                 ],
                 "schedule_finish": [
@@ -1014,17 +1034,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "SouthExit",
-                    67501
+                    "WestExit",
+                    58069
                 ],
                 "schedule_middle": [
                     [
-                        "Skiles",
-                        73907
+                        "IndustrialDesign",
+                        61578
+                    ],
+                    [
+                        "Ferst",
+                        68285
                     ]
                 ],
                 "schedule_finish": [
-                    "SouthExit",
+                    "WestExit",
                     -1
                 ]
             }
@@ -1035,16 +1059,16 @@
             "particle_schedule": {
                 "schedule_start": [
                     "WestExit",
-                    42842
+                    58327
                 ],
                 "schedule_middle": [
                     [
-                        "EastExit",
-                        43721
+                        "BungerHenry",
+                        67578
                     ],
                     [
-                        "NorthExit",
-                        55185
+                        "CulcLibrary",
+                        74197
                     ]
                 ],
                 "schedule_finish": [
@@ -1058,17 +1082,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "EastExit",
-                    46438
+                    "SouthExit",
+                    57581
                 ],
                 "schedule_middle": [
                     [
-                        "WestExit",
-                        49538
+                        "VanLeer",
+                        63102
+                    ],
+                    [
+                        "Student Center",
+                        69651
                     ]
                 ],
                 "schedule_finish": [
-                    "EastExit",
+                    "SouthExit",
                     -1
                 ]
             }
@@ -1078,25 +1106,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "EastExit",
-                    58389
+                    "NorthExit",
+                    40636
                 ],
                 "schedule_middle": [
                     [
-                        "Skiles",
-                        63029
+                        "CulcLibrary",
+                        58481
                     ],
                     [
                         "BungerHenry",
-                        68219
-                    ],
-                    [
-                        "CulcLibrary",
-                        74084
+                        66750
                     ]
                 ],
                 "schedule_finish": [
-                    "EastExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -1106,21 +1130,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "WestExit",
-                    50710
+                    "NorthExit",
+                    33473
                 ],
                 "schedule_middle": [
                     [
-                        "IndustrialDesign",
-                        54167
+                        "Ferst",
+                        47788
                     ],
                     [
-                        "NorthExit",
-                        62199
+                        "Student Center",
+                        53659
+                    ],
+                    [
+                        "IndustrialDesign",
+                        62564
                     ]
                 ],
                 "schedule_finish": [
-                    "WestExit",
+                    "NorthExit",
                     -1
                 ]
             }
@@ -1130,21 +1158,21 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "NorthExit",
-                    26521
+                    "WestExit",
+                    62876
                 ],
                 "schedule_middle": [
                     [
-                        "EastExit",
-                        30534
+                        "VanLeer",
+                        68252
                     ],
                     [
-                        "VanLeer",
-                        40324
+                        "BungerHenry",
+                        76072
                     ]
                 ],
                 "schedule_finish": [
-                    "NorthExit",
+                    "WestExit",
                     -1
                 ]
             }
@@ -1154,41 +1182,25 @@
             "particle_class": "student",
             "particle_schedule": {
                 "schedule_start": [
-                    "NorthExit",
-                    72171
+                    "SouthExit",
+                    55250
                 ],
                 "schedule_middle": [
                     [
-                        "IndustrialDesign",
-                        74651
-                    ]
-                ],
-                "schedule_finish": [
-                    "NorthExit",
-                    -1
-                ]
-            }
-        },
-        {
-            "particle_id": 50,
-            "particle_class": "student",
-            "particle_schedule": {
-                "schedule_start": [
-                    "EastExit",
-                    33504
-                ],
-                "schedule_middle": [
-                    [
-                        "Skiles",
-                        45541
+                        "CulcLibrary",
+                        56502
                     ],
                     [
                         "VanLeer",
-                        58343
+                        63100
+                    ],
+                    [
+                        "CulcLibrary",
+                        77219
                     ]
                 ],
                 "schedule_finish": [
-                    "EastExit",
+                    "SouthExit",
                     -1
                 ]
             }

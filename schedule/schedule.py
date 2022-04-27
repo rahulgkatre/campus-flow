@@ -135,7 +135,7 @@ def determine_classes(people, num_people, auto_class):
 #Generate the class of each particle
 def generate_classes(schedule, people):
 	persons = people.keys()
-	count = 1
+	count = 0
 	for person in persons:
 		for i in range(0,people[person]):
 			particle = {"particle_id": count, "particle_class": person}
