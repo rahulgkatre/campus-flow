@@ -12,6 +12,8 @@ class MapBuildingElement:
         self.building_name = building_name
 
     def set_curl_field(self, image, fieldL, fieldR):
+        self.curl = np.zeros_like(fieldL)
+        return
         # pixels = np.linspace(0, 512, 512, endpoint=False).astype(int)
         x, y = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
         coords = np.array([y,x]).T

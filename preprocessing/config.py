@@ -17,9 +17,12 @@ MAP_COLOR_ELEMENTS = [
 ]
 NULL_COLOR = np.array([0, 0, 0])
 
-MAP_BUILDING_ELEMENTS = [
-#     MapBuildingElement('coc', [np.array([55, 90]), np.array([230, 135])]),
-#     MapBuildingElement('culc', [np.array([235, 370]), np.array([440, 420])]),
+basic_buildings = [
+    MapBuildingElement('coc', [np.array([55, 90]), np.array([230, 135])]),
+    MapBuildingElement('culc', [np.array([235, 370]), np.array([440, 420])]),
+]
+
+campus_buildings = [
     MapBuildingElement('Ferst', [np.array([14, 520]), np.array([83, 383])]),
     MapBuildingElement('Student Center', [np.array([51, 636]), np.array([51, 849]), np.array([290, 809]), np.array([272, 938])]),
     MapBuildingElement('Skiles', [np.array([727, 953]), np.array([776, 813]), np.array([916, 813])]),
@@ -28,3 +31,5 @@ MAP_BUILDING_ELEMENTS = [
     MapBuildingElement('IndustrialDesign', [np.array([852, 164]), np.array([744, 63])]),
     MapBuildingElement('BungerHenry', [np.array([301, 106]), np.array([368, 201]), np.array([248, 315]), np.array([333, 315])]),
 ]
+
+MAP_BUILDING_ELEMENTS = campus_buildings

@@ -4,8 +4,8 @@ import { Particle } from "./Particle";
 import { Goal } from "./Goal";
 import { VectorField } from "./VectorField";
 
-import map_img_path from "assets/maps/campus/map.png";
-import {field as map_field, buildings as map_buildings} from "assets/maps/campus/map";
+import {field as map_field, buildings as map_buildings, img_path as map_img_path} from "assets/maps/campus/map";
+
 
 export let p5: P5Instance;
 function setP5(p: P5Instance) {

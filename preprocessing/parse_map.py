@@ -50,7 +50,7 @@ def runOnMapDir(mapdir, exit=False):
 
     buildings = evaluate_curls(img)
 
-    plot_vector_field_color(field[:, :, 1], field[:, :, 0], (img.shape[0] // 2, img.shape[1] // 2), (img.shape[0] // 2), shape=img.shape[:2])
+    # plot_vector_field(field[:, :, 1], field[:, :, 0], (img.shape[0] // 2, img.shape[1] // 2), (img.shape[0] // 2), shape=img.shape[:2])
 
     if os.path.isfile(field_path):
         print("map.ts already exists in {}. replacing...".format(mapdir))
@@ -68,12 +68,20 @@ if __name__ == "__main__":
         parser.print_usage()
         sys.exit(1)
 
+    pardir = os.path.dirname(os.path.abspath(__file__))
+    map_names = []
     if args.mapdir is not None:
-        args.maps = os.path.relpath(os.path.join(args.mapdir, os.pardir))
+        map_names = [os.path.basename(os.path.normpath(args.mapdir))]
+        pardir = os.path.relpath(os.path.join(args.mapdir, os.pardir))
     if args.maps is not None:
-        for mapdir in os.listdir(args.maps):
-            mapdir = os.path.relpath(os.path.join(args.maps, mapdir))
-            print("Parsing map in {}".format(mapdir))
-            runOnMapDir(mapdir)
+        map_names = os.listdir(args.maps)
+        pardir = args.maps
+    # print("Parsing maps in {}".format(pardir))
+    # print("Found maps: {}".format(map_names))
+    # print(os.path.normpath(args.mapdir))
+    for mapdir in map_names:
+        mapdir = os.path.relpath(os.path.join(pardir, mapdir))
+        print("Parsing map in {}".format(mapdir))
+        runOnMapDir(mapdir)
 
     

@@ -34,7 +34,7 @@ def plot_vector_field(dy, dx, center, lim, shape=(512,512)):
     # pixels = np.linspace(0, *shape, endpoint=False).astype(int)
     x, y = np.meshgrid(np.arange(shape[1],dtype=int), np.arange(shape[0],dtype=int))
 
-    plt.figure(figsize=(32,32))
+    plt.figure(figsize=(16,16))
 
     # Reverse y coordinates because image and axes y are reverses.
     plt.quiver(crop(x,center,lim), crop(y,center,lim)[::-1], crop(dx,center,lim), crop(dy,center,lim))
@@ -116,7 +116,7 @@ def get_building_str(buildings):
             buildingStr += f'[{entry_point[0]},{entry_point[1]}],\n\t\t\t'
         buildingStr += '],\n\t\t'
         buildingStr += f'curl: `\n'
-        buildingStr += get_2d_vec_str(building.curl)
+        buildingStr += ''#get_2d_vec_str(building.curl)
         buildingStr += '\n`\n\t},\n\t'
     return buildingStr + '\n];\n'
 
@@ -127,5 +127,7 @@ def write_field_file(path: str, field_, buildings):
     fieldStr = get_field_str(field_)
     buildingStr = get_building_str(buildings)
     with open(path, 'w') as f:
+        f.write("import { default as img_path } from \"./map.png\";\n")
         f.write(fieldStr)
         f.write(buildingStr)
+        f.write("export { img_path };\n")
