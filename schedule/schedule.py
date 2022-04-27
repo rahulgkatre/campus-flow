@@ -8,23 +8,31 @@ end_time = 86400
 #The various buildings, categorized by type
 #housing = ["North Avenue North", "North Avenue South", "North Avenue East", "North Avenue West", "Towers Residence Hall", "Glenn Residence Hall"]
 #housing = ["Housing1", "Housing2"]
-housing = ["culc"]
+#housing = ["culc"]
+housing = []
 
 #borders = ["5th Street Bridge", "North Avenue Bridge", "Centennial Olympic Park Drive", "10th Street"]
 #borders = ["Border1", "Border2"]
-borders = []
+borders = ["NorthExit", "EastExit", "SouthExit", "WestExit"]
+
 if len(borders) == 0:
 	borders = housing
+if len(housing) == 0:
+	housing = borders
 
 #buildings = ["CULC", "Skiles", "Georgia Tech Tower", "CoC", "Howey", "Klaus", "Van Leer", "Georgia Tech Library", "Student Center"]
 #buildings = ["Building1", "Building2"]
-buildings = ["coc"]
+#buildings = ["coc"]
+buildings = ["Ferst", "Student Center", "Skiles", "CulcLibrary", "VanLeer", "IndustrialDesign", "BungerHenry"]
 
 #other = ["Bobby Dodd Stadium"]
 #other = ["Other1", "Other2"]
 other = []
+
 if len(other) == 0:
 	other = buildings
+if len(buildings) == 0:
+	buildings = other
 
 objects = [housing, borders, buildings, other]
 
@@ -57,9 +65,9 @@ campus_housing = {"student": 1,
                  #  "other": 0}
 
 #Value for "events_classes" key in parameters dictionary
-events_classes = {"student": {"housing": 0.5, 
+events_classes = {"student": {"housing": 0, 
                               "borders": 0,
-                              "buildings": 0.5,
+                              "buildings": 1,
                               "other": 0},
                   "professor": {"housing": 0,
                                 "borders": 0,
