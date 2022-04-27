@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-from config import MAP_COLOR_ELEMENTS, NULL_COLOR, MAP_BUILDING_ELEMENTS
+from config import CONFIGS, DEFAULT_CONFIG, NULL_COLOR
 from utils import *
 
 parser = argparse.ArgumentParser(description='Process a map image into a importable typescript file for a p5 sketch.')
@@ -11,8 +11,20 @@ parser.add_argument('--mapdir', type=str, required=False,
 parser.add_argument('--maps', type=str, required=False,
                     help='where to look for a collection of map folders with map.png and generate a map.ts')
 
-def get_total_field(image, elements=MAP_COLOR_ELEMENTS):
-    # print(image.shape)
+def get_total_field(image, configName=None):
+    """
+    Get the total field of the image
+    This is done by summing the vector field contributions from each element
+    """
+    if configName is not None and type(configName) is list:
+        elements = configName
+    else:
+        if configName is None or configName not in CONFIGS:
+            elements = DEFAULT_CONFIG['colors']
+            print("\tUsing default config")
+        else:
+            elements = CONFIGS[configName]['colors']
+            print("\tUsing config {}".format(configName))
     height,width = image.shape[:2]
     vecField = np.zeros((height, width, 2))
     null_color_mask = get_color_mask(NULL_COLOR, image)
@@ -22,8 +34,20 @@ def get_total_field(image, elements=MAP_COLOR_ELEMENTS):
         vecField[:, :, 1] += dy
     return vecField
 
-def evaluate_curls(image, elements=MAP_BUILDING_ELEMENTS):
-    obstacle_element = list(filter(lambda c: c.name == 'obstacle', MAP_COLOR_ELEMENTS))[0]
+def evaluate_curls(image, configName=None):
+    """
+    Evaluate the curl of the vector field for each building
+    Curl is only based on bulidings, so we first generate an obstacle only field.
+    This field is then used to create two curl fields and these are passed to each building element to determine which curl field is optimal at each point of the map to push particles towards the closest entrance.
+    """
+    if configName is None or configName not in CONFIGS:
+        obstacle_element = list(filter(lambda c: c.name == 'obstacle', DEFAULT_CONFIG['colors']))[0]
+        elements = DEFAULT_CONFIG['buildings']
+        print("\tUsing default config")
+    else:
+        obstacle_element = list(filter(lambda c: c.name == 'obstacle', CONFIGS[configName]['colors']))[0]
+        elements = CONFIGS[configName]['buildings']
+        print("\tUsing config {}".format(configName))
     obstacle_field = get_total_field(image, [obstacle_element])
     obstacle_field[get_color_mask(obstacle_element.color, image)] = 0
     obstacle_field = normalize_field(obstacle_field)
@@ -35,6 +59,14 @@ def evaluate_curls(image, elements=MAP_BUILDING_ELEMENTS):
     return elements
 
 def runOnMapDir(mapdir, exit=False):
+    """
+    Find a map.png file within the directory and generate a map.ts file
+    This is done by:
+        reading the image
+        calculating the potential field based on social-force model
+        evaluating curl for each building
+        writing the fields into a typescript file for importing into simulation
+    """
     image_path = os.path.join(mapdir, "map.png")
     if not os.path.isfile(image_path):
         print("Could not find map.png in {}".format(mapdir))
@@ -43,18 +75,17 @@ def runOnMapDir(mapdir, exit=False):
         return
     field_path = os.path.join(mapdir, "map.ts")
     
+    mapName = os.path.basename(mapdir)
+
     img = read_img(image_path)
-    field = get_total_field(img)
+    field = get_total_field(img, configName=mapName)
     field = add_noise(field)
     field = normalize_field(field)
 
-    buildings = evaluate_curls(img)
-
-    # plot_vector_field(field[:, :, 1], field[:, :, 0], (img.shape[0] // 2, img.shape[1] // 2), (img.shape[0] // 2), shape=img.shape[:2])
+    buildings = evaluate_curls(img, configName=mapName)
 
     if os.path.isfile(field_path):
         print("map.ts already exists in {}. replacing...".format(mapdir))
-        # os.remove(field_path)
     write_field_file(field_path, field, buildings)
 
 if __name__ == "__main__":
@@ -76,9 +107,6 @@ if __name__ == "__main__":
     if args.maps is not None:
         map_names = os.listdir(args.maps)
         pardir = args.maps
-    # print("Parsing maps in {}".format(pardir))
-    # print("Found maps: {}".format(map_names))
-    # print(os.path.normpath(args.mapdir))
     for mapdir in map_names:
         mapdir = os.path.relpath(os.path.join(pardir, mapdir))
         print("Parsing map in {}".format(mapdir))

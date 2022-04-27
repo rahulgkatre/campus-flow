@@ -12,7 +12,8 @@ export class Particle {
 
   readonly id: number;
   readonly spawnTime: number;
-  readonly start: Goal;
+  readonly start: Goal|null;
+  readonly startName: string;
   readonly startPos: Vector;
   readonly goal: Goal;
   private readonly position: Vector;
@@ -30,12 +31,19 @@ export class Particle {
   private curled: boolean;
   confusedCount: number;
 
-  constructor(id: number, spawnTime: number, start: Goal, goal: Goal) {
+  constructor(id: number, spawnTime: number, start: Goal | Vector, goal: Goal) {
     this.id = id;
     this.spawnTime = spawnTime;
-    this.start = start;
+    if (start instanceof Goal) {
+      this.start = start;
+      this.startName = start.name;
+      this.startPos = start.closestPosition(goal.randomPosition());
+    } else {
+      this.start = null;
+      this.startName = 'spawned';
+      this.startPos = start;
+    }
     this.goal = goal;
-    this.startPos = start.closestPosition(goal.randomPosition());
     this.position = this.startPos.copy();
     this.goalPos = goal.closestPosition(this.position);
     this.heading = Vector.sub(this.goalPos, this.position).normalize();
@@ -184,6 +192,13 @@ export class Particle {
 
   markGoalAsReached() {
     this.goal.markReachedByAt(this.id, this.spawnTime);
+  }
+
+  getXint() {
+    return Math.floor(this.position.x);
+  }
+  getYint() {
+    return Math.floor(this.position.y);
   }
 
 }

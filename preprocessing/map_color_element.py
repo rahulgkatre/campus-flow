@@ -6,6 +6,13 @@ import cv2
 from utils import crop, display_image, get_color_mask
 
 class MapColorElement:
+    """
+    This class represents a map element (e.g. obstacle) that can be used to calculate a contribution to the vector field
+    Each map has a list of these elements, and the vector field is calculated for each element
+    The map element is represented by a color which is used to get a mask of the image
+    The mask is then blurred and we take the gradient to determine direction vectors either toward or away from regions of that color in the map
+    """
+
     def __init__(self, name, color,*args,externalBlurSigmas,forceToEnter,internalBlurSigmas=None,forceToLeave):
         self.name = name
         self.color = color

@@ -1,12 +1,12 @@
 import { P5Instance } from "react-p5-wrapper";
-import { Image } from "p5";
+import { Image, Vector } from "p5";
 import { Particle } from "./Particle";
 import { Goal } from "./Goal";
 import { VectorField } from "./VectorField";
 
-import {field as map_field, buildings as map_buildings, img_path as map_img_path} from "assets/maps/campus/map";
+import {field as map_field, buildings as map_buildings, img_path as map_img_path} from "assets/maps/hallway/map";
 
-import {schedule as particle_schedule} from "assets/schedules/campus4";
+import {schedule as particle_schedule} from "assets/schedules/empty";
 
 export let p5: P5Instance;
 function setP5(p: P5Instance) {
@@ -14,17 +14,38 @@ function setP5(p: P5Instance) {
   (window as any).p5 = p;
 }
 
+type ScheduleEntryJSON = [
+  typeof map_buildings[number]['name'],
+  number,
+];
+
+interface ParticleJSON {
+  particle_class: "student" | "professor" | "faculty" | "other",
+  particle_schedule: ScheduleEntryJSON[],
+}
+
+interface ScheduleJSON {
+  num_particles: number,
+  particles: ParticleJSON[],
+}
+
 const fieldDescriptor = map_field;
 const buildings = map_buildings;
-const scheduleJSON = particle_schedule;
+const scheduleJSON: ScheduleJSON = particle_schedule;
 
-const EARLIEST_SPAWN = scheduleJSON.particles.map(p => {
-  return p.particle_schedule[0][1];
-}).reduce((a, b) => Math.min(a, b) as any);
+const EARLIEST_SPAWN = (() => {
+  let temp = scheduleJSON.particles.map(p => {
+    return p.particle_schedule[0][1];
+  }).reduce((a, b) => Math.min(a, b) as any,999999999999);
+  return temp !== 999999999999 ? temp : 0;
+})();
 
-const LATEST_SPAWN = scheduleJSON.particles.map(p => {
-  return p.particle_schedule[p.particle_schedule.length-1][1];
-}).reduce((a, b) => Math.max(a, b) as any);
+const LATEST_SPAWN = (() => {
+  let temp = scheduleJSON.particles.map(p => {
+    return p.particle_schedule[p.particle_schedule.length-1][1];
+  }).reduce((a, b) => Math.max(a, b) as any, 0);
+  return temp !== 0 ? temp : 999999999999;
+})();
 
 export function sketch(p5: P5Instance) {
   setP5(p5);
@@ -76,15 +97,23 @@ export function sketch(p5: P5Instance) {
 
   const travel_times: number[] = [];
   const travel_time_map: Map<string, number[]> = new Map();
+  
+  const travel_history: number[][] = [];
+  let maxTravelHistory = 0;
 
-  // function randomPos() {
-  //   return p5.createVector(p5.random(0, p5.width), p5.random(0, p5.height));
-  //   // return Vector.random2D().mult(p5.random()*p5.width/2,p5.random()*p5.height/2).add(p5.width/2,p5.height/2);
-  // }
+  function randomPos() {
+    return p5.createVector(p5.random(0, p5.width), p5.random(0, p5.height));
+    // return Vector.random2D().mult(p5.random()*p5.width/2,p5.random()*p5.height/2).add(p5.width/2,p5.height/2);
+  }
 
-  // function randomParticle(pos?: Vector) {
-  //   return new Particle(Math.round(p5.random(100000,1000000)), TIME, pos ?? randomPos(), p5.random(goals.slice(0,1)));
-  // }
+  function randomParticle(pos?: Vector) {
+    const startIndex = Math.floor(p5.random(goals.length));
+    let endIndex = Math.floor(p5.random(goals.length));
+    while (endIndex === startIndex) {
+      endIndex = Math.floor(p5.random(goals.length));
+    }
+    return new Particle(Math.round(p5.random(100000,1000000)), TIME, pos || randomPos(), goals[endIndex]);
+  }
 
   function READ_RAW_TIME(): number {
     return p5.frameCount / 60 * 1000;
@@ -102,6 +131,16 @@ export function sketch(p5: P5Instance) {
     // console.log(EARLIEST_SPAWN,TIME);
 
     travel_times.length = 0;
+    travel_time_map.clear();
+
+    travel_history.length = 0;
+    for (let x = 0; x < p5.width; x++) {
+      travel_history.push([]);
+      for (let y = 0; y < p5.height; y++) {
+        travel_history[x].push(0);
+      }
+    }
+    maxTravelHistory = 0;
 
     p5.background(0);
   }
@@ -150,6 +189,18 @@ export function sketch(p5: P5Instance) {
     p5.image(backgroundImage, 0, 0);
   }
 
+  function drawHeatMap() {
+    p5.noStroke();
+    p5.fill(255, 0, 0, 0.1);
+    travel_history.forEach((row, x) => {
+      row.forEach((val, y) => {
+        if (val > 0) {
+          p5.rect(x, y, 1, 1);
+        }
+      });
+    });
+  }
+
   p5.mousePressed = () => {
     if (p5.mouseX < 0 || p5.mouseX >= p5.width || p5.mouseY < 0 || p5.mouseY >= p5.height) {
       return;
@@ -157,11 +208,14 @@ export function sketch(p5: P5Instance) {
     if (mapImage.get(p5.mouseX, p5.mouseY).every(v => v === 255)) {
       return;
     }
-    // particles.push(randomParticle(p5.createVector(p5.mouseX, p5.mouseY)));
+    if (scheduleJSON.num_particles > 0) {
+      return;
+    }
+    particles.push(randomParticle(p5.createVector(p5.mouseX, p5.mouseY)));
   };
 
   p5.mouseDragged = () => {
-    if (p5.random() < 0.3) {
+    if (p5.random() < 0.6) {
       return;
     }
     p5.mousePressed();
@@ -239,10 +293,10 @@ export function sketch(p5: P5Instance) {
         live_particle_ids.delete(particle.id);
         const travel_time = TIME - particle.spawnTime;
         if (particle.confusedCount <= Particle.MAX_CONFUSION_COUNT && travel_time <= 2000) {
-          registerTravelTime(travel_time, particle.start.name, particle.goal.name);
-          doAnalysisPerFrame();
+          registerTravelTime(travel_time, particle.startName, particle.goal.name);
+          periodicAnalysis();
         } else {
-          console.log(`particle ${particle.id} took a long time: ${postProcessTimeValue(travel_time)[1]}\n\t${particle.start.name} -> ${particle.goal.name}`);
+          console.log(`particle ${particle.id} took a long time: ${postProcessTimeValue(travel_time)[1]}\n\t${particle.startName} -> ${particle.goal.name}`);
         }
         // console.log(`particle ${particle.id} reached goal ${particle.goal.name} at ${Math.floor(TIME)}`);
       }
@@ -280,12 +334,12 @@ export function sketch(p5: P5Instance) {
     const [mean,meanStr] = postProcessTimeValue(times.reduce((a, b) => a + b, 0) / times.length);
     const [std,stdStr] = postProcessTimeValue(Math.sqrt(times.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / times.length));
     if (print) {
-      console.log(`min: ${minStr}, max: ${maxStr}, mean: ${meanStr}, std: ${stdStr}`);
+      // console.log(`min: ${minStr}, max: ${maxStr}, mean: ${meanStr}, std: ${stdStr}`);
     }
     return [min,minStr,max,maxStr,mean,meanStr,std,stdStr];
   }
 
-  function doAnalysisPerFrame() {
+  function periodicAnalysis() {
     // find hot spots where there are a lot of particles
     
     // data analysis on travel times
@@ -294,14 +348,25 @@ export function sketch(p5: P5Instance) {
     travel_time_map.forEach((times, key) => {
       const [start,goal] = key.split("->");
       const [,minStr,,maxStr,,meanStr,,stdStr] = getMinMaxMeanStdTimes(times, false);
-      console.log(`\t${start}->${goal}: [${minStr},  ${meanStr} ,${maxStr}] :: ${stdStr}`);
+      // console.log(`\t${start}->${goal}: [${minStr},  ${meanStr} ,${maxStr}] :: ${stdStr}`);
     });
 
     // console.log(travel_times);
   }
 
+
+  function perFrameAnalysis() {
+    particles.forEach((particle) => {
+      travel_history[particle.getXint()][particle.getYint()] += 1;
+      if (travel_history[particle.getXint()][particle.getYint()] > maxTravelHistory) {
+        maxTravelHistory = travel_history[particle.getXint()][particle.getYint()];
+      }
+    });
+  }
+
   p5.draw = () => {
     drawBackground();
+    drawHeatMap();
     advanceTime();
     
     if (!paused) {
@@ -315,6 +380,7 @@ export function sketch(p5: P5Instance) {
       console.log(`TIME: ${postProcessTimeValue(TIME).join(" - ")}`);
       // doAnalysisPerFrame();
     }
+    perFrameAnalysis();
 
     // draw mouse position next to mouse
     p5.stroke(255,0,0);

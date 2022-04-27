@@ -516,120 +516,20 @@ export const field = `
 export const buildings = 
 [
 	{
-		name: "Ferst",
+		name: "coc",
 		entryPoints: [
-			[14,520],
-			[83,383],
+			[55,90],
+			[230,135],
 			],
 		curl: `
 
 `
 	},
 	{
-		name: "Student Center",
+		name: "culc",
 		entryPoints: [
-			[51,636],
-			[51,849],
-			[290,809],
-			[272,938],
-			],
-		curl: `
-
-`
-	},
-	{
-		name: "Skiles",
-		entryPoints: [
-			[727,953],
-			[776,813],
-			[916,813],
-			],
-		curl: `
-
-`
-	},
-	{
-		name: "CulcLibrary",
-		entryPoints: [
-			[776,718],
-			[972,718],
-			[972,569],
-			[748,368],
-			],
-		curl: `
-
-`
-	},
-	{
-		name: "VanLeer",
-		entryPoints: [
-			[521,198],
-			[702,174],
-			],
-		curl: `
-
-`
-	},
-	{
-		name: "IndustrialDesign",
-		entryPoints: [
-			[852,164],
-			[744,63],
-			],
-		curl: `
-
-`
-	},
-	{
-		name: "BungerHenry",
-		entryPoints: [
-			[301,106],
-			[368,201],
-			[248,315],
-			[333,315],
-			],
-		curl: `
-
-`
-	},
-	{
-		name: "NorthExit",
-		entryPoints: [
-			[41,2],
-			[400,2],
-			[734,0],
-			],
-		curl: `
-
-`
-	},
-	{
-		name: "EastExit",
-		entryPoints: [
-			[1028,168],
-			[1028,352],
-			[1028,765],
-			],
-		curl: `
-
-`
-	},
-	{
-		name: "SouthExit",
-		entryPoints: [
-			[665,1022],
-			[272,1022],
-			[14,1022],
-			],
-		curl: `
-
-`
-	},
-	{
-		name: "WestExit",
-		entryPoints: [
-			[2,568],
-			[2,850],
+			[235,370],
+			[440,420],
 			],
 		curl: `
 

@@ -113,6 +113,7 @@ parameters = {"num_people": 500000, #number of particles in simulation for autom
               "events_classes": events_classes, #Probability of event type for particle schedules based on particle class
 			  "time_constraint": True, #Do the times of the schedules have constraints? True: yes (constrained schedule times), False: no (no constraints, just random)
 			  "event_syncing": True, #Do the event times of each particle match each other? True: yes, False: no
+			  "sync_time": start_time + round(12*(end_time - start_time)/24), #Start time of the particles' synced schedules (12 PM)
 			  "event_clumping": True} #Are the event times of each particle as close together as possible? True: yes, False: no
 
 #Methods
@@ -175,7 +176,7 @@ def helper_generate_events(schedule, locations, event_probability, person):
 	return location
 
 #Generate the locations of the events for each particle's schedule
-def generate_events(schedule, locations, campus_probability, event_probability):
+def generate_events(schedule, locations, parameters):
 	campus_probability = parameters["campus_housing"]
 	event_probability = parameters["events_classes"]
 	for person in range(0, len(schedule)):
@@ -205,36 +206,60 @@ def generate_events(schedule, locations, campus_probability, event_probability):
 						location = helper_generate_events(schedule, locations, event_probability, person)
 				event_list[event].append(location)
 
-#Generate the start and end location and times
-def generate_start_and_end(schedule, t_start, t_end, min_len_event, max_walk_time):
-	for person in range(0, len(schedule)):
-		num_events = len(schedule[person]["particle_schedule"])-1
-		schedule_length = num_events*min_len_event + (num_events+1)*max_walk_time
-		begin_time = random.randint(t_start, t_end - schedule_length)
-		schedule[person]["particle_schedule"][0].append(begin_time)
-
 #Generate the times of the events for each particle's schedule
-def generate_times(schedule, t_start, t_end, max_walk_time, min_length_event):
-	for person in range(0, len(schedule)):
-		event_list = schedule[person]["particle_schedule"]
-		num_events = len(event_list)-1
-		schedule_length = num_events*min_length_event + (num_events-1)*max_walk_time
-		begin_time = random.randint(t_start, t_end - schedule_length - max_walk_time)
-		event_list[0].append(begin_time)
-		for event in range(0, len(event_list)):
-			t_low = begin_time - max_walk_time
-			if event != 0:
-				t_low = event_list[event-1][1]+max_walk_time+min_length_event
-			t_high = t_end
-			if event != len(event_list)-1:
-				t_high = t_end - (len(event_list)-1-event)*(max_walk_time+min_length_event)
-			t = random.randint(t_low,t_high)
-			if event == 0:
-				event_list[event][1] = t
+def generate_times(schedule, parameters):
+	t_start = parameters["start_day"]
+	t_end = parameters["end_day"]
+	max_walk_time = parameters["max_walk_time"]
+	min_length_event = parameters["min_len_event"]
+	if parameters["time_constraint"]:
+		if parameters["event_syncing"]:
+			if parameters["event_clumping"]:
+				for person in range(0, len(schedule)):
+					begin_time = parameters["sync_time"]
+					event_list[0].append(begin_time)
+					for event in range(1, len(event_list)):
+						begin_time += max_walk_time + min_length_event
+						if event != 0:
+							t_low = event_list[event-1][1]+max_walk_time+min_length_event
+						t_high = t_end
+						if event != len(event_list)-1:
+							t_high = t_end - (len(event_list)-1-event)*(max_walk_time+min_length_event)
+						t = random.randint(t_low,t_high)
+						if event == 0:
+							event_list[event][1] = t
+						else:
+							if t < event_list[event-1][1]+max_walk_time+min_length_event:
+								print("Times are too close together.")
+							event_list[event].append(t)
 			else:
-				if t < event_list[event-1][1]+max_walk_time+min_length_event:
-					print("Times are too close together.")
-				event_list[event].append(t)
+				pass
+		else:
+			if parameters["event_clumping"]:
+				pass
+			else:
+				pass
+	else:
+		for person in range(0, len(schedule)):
+			event_list = schedule[person]["particle_schedule"]
+			num_events = len(event_list)-1
+			schedule_length = num_events*min_length_event + (num_events-1)*max_walk_time
+			begin_time = random.randint(t_start, t_end - schedule_length - max_walk_time)
+			event_list[0].append(begin_time)
+			for event in range(0, len(event_list)):
+				t_low = begin_time - max_walk_time
+				if event != 0:
+					t_low = event_list[event-1][1]+max_walk_time+min_length_event
+				t_high = t_end
+				if event != len(event_list)-1:
+					t_high = t_end - (len(event_list)-1-event)*(max_walk_time+min_length_event)
+				t = random.randint(t_low,t_high)
+				if event == 0:
+					event_list[event][1] = t
+				else:
+					if t < event_list[event-1][1]+max_walk_time+min_length_event:
+						print("Times are too close together.")
+					event_list[event].append(t)
 
 #Generate the schedule of each particle
 def generate_schedule(people_classes, locations, parameters):
@@ -242,9 +267,8 @@ def generate_schedule(people_classes, locations, parameters):
 	              "particles": []}
 	generate_classes(dictionary["particles"], people_classes, dictionary["num_particles"], parameters)
 	generate_num_events(dictionary["particles"], parameters)
-	generate_start_and_end(dictionary["particles"], parameters["start_day"], parameters["end_day"], parameters["min_len_event"], parameters["max_walk_time"])
-	generate_events(dictionary["particles"], locations, parameters["campus_housing"], parameters["events_classes"])
-	generate_times(dictionary["particles"], parameters["start_day"], parameters["end_day"], parameters["max_walk_time"], parameters["min_len_event"])
+	generate_events(dictionary["particles"], locations, parameters)
+	generate_times(dictionary["particles"], parameters)
 	if dictionary["num_particles"] != len(dictionary["particles"]):
 		print("Error: There are particles missing. Do not proceed.")
 		return -1

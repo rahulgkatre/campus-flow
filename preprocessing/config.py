@@ -13,18 +13,13 @@ basic_colors = [
     MapColorElement('grass', np.array([34, 177, 76]), externalBlurSigmas=[4], forceToEnter=0, forceToLeave=15),
     MapColorElement('obstacle', np.array([255, 255, 255]), externalBlurSigmas=[24], forceToEnter=-100, internalBlurSigmas=[32], forceToLeave=100)
 ]
-
-campus_colors = [
-    MapColorElement('path', np.array([127, 127, 127]), externalBlurSigmas=[24], forceToEnter=40, internalBlurSigmas=[16], forceToLeave=-20),
-    MapColorElement('grass', np.array([34, 177, 76]), externalBlurSigmas=[4], forceToEnter=0, forceToLeave=15),
-    MapColorElement('obstacle', np.array([255, 255, 255]), externalBlurSigmas=[24], forceToEnter=-100, internalBlurSigmas=[32], forceToLeave=100)
-]
-
 basic_buildings = [
     MapBuildingElement('coc', [np.array([55, 90]), np.array([230, 135])]),
     MapBuildingElement('culc', [np.array([235, 370]), np.array([440, 420])]),
 ]
 
+
+campus_colors = basic_colors
 campus_buildings = [
     MapBuildingElement('Ferst', [np.array([14, 520]), np.array([83, 383])]),
     MapBuildingElement('Student Center', [np.array([51, 636]), np.array([51, 849]), np.array([290, 809]), np.array([272, 938])]),
@@ -39,7 +34,19 @@ campus_buildings = [
     MapBuildingElement('WestExit', [np.array([2, 568]), np.array([2, 850])]),
 ]
 
-configs = {
+doorway_colors = basic_colors
+doorway_buildings = [
+    MapBuildingElement('Left', [np.array([0, 256])]),
+    MapBuildingElement('Right', [np.array([512, 256])]),
+]
+
+hallway_colors = basic_colors
+hallway_buildings = [
+    MapBuildingElement('Left', [np.array([0, 256])]),
+    MapBuildingElement('Right', [np.array([512, 256])]),
+]
+
+CONFIGS = {
     'basic': {
         'colors': basic_colors,
         'buildings': basic_buildings,
@@ -48,10 +55,19 @@ configs = {
         'colors': campus_colors,
         'buildings': campus_buildings,
     },
+    'doorway': {
+        'colors': doorway_colors,
+        'buildings': doorway_buildings,
+    },
+    'hallway': {
+        'colors': hallway_colors,
+        'buildings': hallway_buildings,
+    },
 }
-CONFIG = 'campus'
+DEFAULT_CONFIG_NAME = 'campus'
 
-MAP_COLOR_ELEMENTS = configs[CONFIG]['colors']
+DEFAULT_CONFIG = CONFIGS[DEFAULT_CONFIG_NAME]
+MAP_COLOR_ELEMENTS = DEFAULT_CONFIG['colors']
 NULL_COLOR = np.array([0, 0, 0])
 
-MAP_BUILDING_ELEMENTS = configs[CONFIG]['buildings']
+MAP_BUILDING_ELEMENTS = DEFAULT_CONFIG['buildings']

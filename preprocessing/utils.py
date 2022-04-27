@@ -116,7 +116,7 @@ def get_building_str(buildings):
             buildingStr += f'[{entry_point[0]},{entry_point[1]}],\n\t\t\t'
         buildingStr += '],\n\t\t'
         buildingStr += f'curl: `\n'
-        buildingStr += ''#get_2d_vec_str(building.curl)
+        buildingStr += ''#get_2d_vec_str(building.curl) # curl is ignored since it is not used in simulation and drastically slows done the file writing process
         buildingStr += '\n`\n\t},\n\t'
     return buildingStr + '\n] as const;\n'
 
