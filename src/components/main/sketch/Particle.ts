@@ -102,7 +102,7 @@ export class Particle {
 
     const desiredHeading = new Vector(0,0)
         .add(toGoalHeading.mult(goalEffect))
-        .add(avoidOthersHeading.mult(this.otherParticleCount*4.5))
+        .add(avoidOthersHeading.mult(this.otherParticleCount*2))
         .add(fieldForce.mult(fieldEffect))
         .add(fieldForceAtHeading.mult(fieldEffect))
         .add(curlForce.mult(curlEffect))

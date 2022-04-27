@@ -6,6 +6,7 @@ import { VectorField } from "./VectorField";
 
 import {field as map_field, buildings as map_buildings, img_path as map_img_path} from "assets/maps/campus/map";
 
+import {schedule as particle_schedule} from "assets/schedules/campus1";
 
 export let p5: P5Instance;
 function setP5(p: P5Instance) {
@@ -14,15 +15,19 @@ function setP5(p: P5Instance) {
 
 const fieldDescriptor = map_field;
 const buildings = map_buildings;
+const scheduleJSON = particle_schedule;
 
 export function sketch(p5: P5Instance) {
   setP5(p5);
 
   const particles: Particle[] = [];
+  const waiting_particles: Particle[] = [];
   const goals: Goal[] = [];
+  const goal_map: Map<string, Goal> = new Map();
   const vectorField: VectorField = new VectorField(fieldDescriptor);
 
-  const NUM_PARTICLES = 0;
+  // const NUM_PARTICLES = 0;
+  const SIMULATION_SPEED_FACTOR = 1; // 1: 1ms sim -> 1s real
 
   let resetCounter = 0;
 
@@ -43,12 +48,17 @@ export function sketch(p5: P5Instance) {
         building.curl,
         defaultColors.length > 0 ? defaultColors.shift()! : p5.color(p5.random(255), p5.random(255), p5.random(255))
       ));
+    goal_map.set(building.name, goals[goals.length - 1]);
   }
 
   let mapImage: Image;
   let backgroundImage: Image;
 
   let paused = false;
+
+  let timer__wasPaused = false;
+  let lastTime = 0;
+  let TIME = 0;
 
   function randomPos() {
     return p5.createVector(p5.random(0, p5.width), p5.random(0, p5.height));
@@ -62,9 +72,13 @@ export function sketch(p5: P5Instance) {
   function reset() {
     particles.length = 0;
 
-    for (let i = 0; i < NUM_PARTICLES; i++) {
-      particles.push(randomParticle());
-    }
+    // for (let i = 0; i < NUM_PARTICLES; i++) {
+    //   particles.push(randomParticle());
+    // }
+    lastTime = 0;
+    TIME = 0;
+
+    // fill waiting_particles based on the schedule
     
     p5.background(0);
   }
@@ -86,7 +100,7 @@ export function sketch(p5: P5Instance) {
     // setup backgorund image
     p5.background(0);
     p5.image(mapImage, 0, 0);
-    vectorField.draw(); // toggle comment this line to not draw vector field
+    // vectorField.draw(); // toggle comment this line to not draw vector field
     // goals[0].curlField.draw();
     backgroundImage = p5.get();
 
@@ -128,31 +142,68 @@ export function sketch(p5: P5Instance) {
     p5.mousePressed();
   }
 
-  p5.draw = () => {
-    drawBackground();
-    
-    if (!paused) {
-      for (let i = 0; i < particles.length; i++) {
-        const particle = particles[i];
-        particle.resetOtherParticleAvoidance();
-        for (const otherP of particles) {
-          if (particle === otherP) {
-            continue;
-          }
-          particle.avoidOther(otherP);
+  function spawnNewParticles() {
+    // if (p5.random() < 0.1) {
+    //   return;
+    // }
+    // particles.push(randomParticle());
+    // for (let i = 0; i < 1; i++) {
+    //   const particle = waiting_particles[0];
+    //   if (particle.particle_schedule[0].time > TIME) {
+    //     break;
+    //   }
+    // }
+  }
+
+  function advanceTime() {
+    if (paused) {
+      timer__wasPaused = true;
+      return;
+    }
+    if (timer__wasPaused) {
+      timer__wasPaused = false;
+      lastTime = p5.millis();
+    }
+    const now = p5.millis();
+    TIME += (now - lastTime) / SIMULATION_SPEED_FACTOR;
+    lastTime = now;
+  }
+
+  function calculateAndApplyForces() {
+    for (let i = 0; i < particles.length; i++) {
+      const particle = particles[i];
+      particle.resetOtherParticleAvoidance();
+      for (const otherP of particles) {
+        if (particle === otherP) {
+          continue;
         }
-        const reached = particle.evaluateForces(vectorField);
-        if (reached) {
-          particles.splice(i, 1);
-          i--;
-        }
+        particle.avoidOther(otherP);
+      }
+      const reached = particle.evaluateForces(vectorField);
+      if (reached) {
+        particles.splice(i, 1);
+        i--;
       }
     }
+  }
 
+  function updateAndDrawParticles() {
     for (const particle of particles) {
       if (!paused) particle.update();
       particle.draw();
     }
+  }
+
+  p5.draw = () => {
+    drawBackground();
+    advanceTime();
+    
+    if (!paused) {
+      spawnNewParticles();
+      calculateAndApplyForces();
+    }
+
+    updateAndDrawParticles();
 
     // draw mouse position next to mouse
     p5.stroke(255,0,0);

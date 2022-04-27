@@ -26,11 +26,14 @@ class MapColorElement:
         
         # blur the outside and inside separately, average blur results from multiple sigma values 
         int_blur = sum([gaussian((~color_mask).astype(float), sigma=int_sig) / len(self.internalBlurSigmas) for int_sig in self.internalBlurSigmas])
-        ext_blur = sum([gaussian(cv2.dilate(color_mask.astype(float), np.ones((5, 5))), sigma=ext_sig) / len(self.externalBlurSigmas) for ext_sig in self.externalBlurSigmas])
+        ext_blur_mask = color_mask.astype(float) if self.name != 'obstacle' else cv2.dilate(color_mask.astype(float), np.ones((10, 10)))
+        ext_blur = sum([gaussian(ext_blur_mask, sigma=ext_sig) / len(self.externalBlurSigmas) for ext_sig in self.externalBlurSigmas])
 
         # zero out the field where a different color is present
         if null_color_mask is not None:
-            invalid_regions = ~(color_mask | null_color_mask)
+            invalid_regions = ~(color_mask
+            | null_color_mask
+            | cv2.dilate(color_mask.astype(float), np.ones((int(np.mean(self.externalBlurSigmas)), int(np.mean(self.externalBlurSigmas))))).astype(bool))
             int_blur[invalid_regions] = 0
             ext_blur[invalid_regions] = 0
 

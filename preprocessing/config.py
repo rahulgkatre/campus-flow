@@ -8,12 +8,17 @@ Each color needs to have a separate vector field so that weighting can be done.
 For example, the aversion to walk on grass is much less than the aversion to walk into a wall.
 Similarly, there is an attraction to walk on a path rather than on the road.
 '''
-MAP_COLOR_ELEMENTS = [
+basic_colors = [
     MapColorElement('path', np.array([127, 127, 127]), externalBlurSigmas=[24], forceToEnter=40, internalBlurSigmas=[16], forceToLeave=-20),
     MapColorElement('grass', np.array([34, 177, 76]), externalBlurSigmas=[4], forceToEnter=0, forceToLeave=15),
     MapColorElement('obstacle', np.array([255, 255, 255]), externalBlurSigmas=[24], forceToEnter=-100, internalBlurSigmas=[32], forceToLeave=100)
 ]
-NULL_COLOR = np.array([0, 0, 0])
+
+campus_colors = [
+    MapColorElement('path', np.array([127, 127, 127]), externalBlurSigmas=[24], forceToEnter=40, internalBlurSigmas=[16], forceToLeave=-20),
+    MapColorElement('grass', np.array([34, 177, 76]), externalBlurSigmas=[4], forceToEnter=0, forceToLeave=15),
+    MapColorElement('obstacle', np.array([255, 255, 255]), externalBlurSigmas=[24], forceToEnter=-100, internalBlurSigmas=[32], forceToLeave=100)
+]
 
 basic_buildings = [
     MapBuildingElement('coc', [np.array([55, 90]), np.array([230, 135])]),
@@ -31,6 +36,22 @@ campus_buildings = [
     MapBuildingElement('NorthExit', [np.array([41, 2]), np.array([400, 2]), np.array([734, 0])]),
     MapBuildingElement('EastExit', [np.array([1028, 168]), np.array([1028, 352]), np.array([1028, 765])]),
     MapBuildingElement('SouthExit', [np.array([665, 1022]), np.array([272, 1022]), np.array([14, 1022])]),
+    MapBuildingElement('WestExit', [np.array([2, 568]), np.array([2, 850])]),
 ]
 
-MAP_BUILDING_ELEMENTS = campus_buildings
+configs = {
+    'basic': {
+        'colors': basic_colors,
+        'buildings': basic_buildings,
+    },
+    'campus': {
+        'colors': campus_colors,
+        'buildings': campus_buildings,
+    },
+}
+CONFIG = 'campus'
+
+MAP_COLOR_ELEMENTS = configs[CONFIG]['colors']
+NULL_COLOR = np.array([0, 0, 0])
+
+MAP_BUILDING_ELEMENTS = configs[CONFIG]['buildings']
