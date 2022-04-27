@@ -18,8 +18,8 @@ export class VectorField {
           this.field.push(fieldStrengths);
         }
       }
+      // console.log(this.field);
     }
-    // console.log(this.field);
   }
   getForce(point: Vector) {
     if (!this.hasField) {

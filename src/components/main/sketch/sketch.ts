@@ -2,17 +2,18 @@ import { P5Instance } from "react-p5-wrapper";
 import { Image, Vector } from "p5";
 import { Particle } from "./Particle";
 import { Goal } from "./Goal";
-import basic_map_path from "assets/maps/basic/map.png";
-import {field as basic_map_field, buildings as basic_map_buildings} from "assets/maps/basic/map";
 import { VectorField } from "./VectorField";
+
+import {field as map_field, buildings as map_buildings, img_path as map_img_path} from "assets/maps/campus/map";
+
 
 export let p5: P5Instance;
 function setP5(p: P5Instance) {
   p5 = p;
 }
 
-const fieldDescriptor = basic_map_field;
-const buildings = basic_map_buildings;
+const fieldDescriptor = map_field;
+const buildings = map_buildings;
 
 export function sketch(p5: P5Instance) {
   setP5(p5);
@@ -69,19 +70,24 @@ export function sketch(p5: P5Instance) {
   }
 
   p5.preload = () => {
-    mapImage = p5.loadImage(basic_map_path);
+    mapImage = p5.loadImage(map_img_path);
   }
 
   p5.setup = () => {
-    p5.createCanvas(mapImage.width, mapImage.height);
+    const c = p5.createCanvas(mapImage.width, mapImage.height);
+    const canvas = (c as any).canvas as HTMLCanvasElement;
+    canvas.removeAttribute("style");
+    canvas.classList.add("max-w-full");
+    canvas.classList.add("max-h-full");
+
 
     mapImage.loadPixels();
 
     // setup backgorund image
     p5.background(0);
     p5.image(mapImage, 0, 0);
-    // vectorField.draw(); // toggle comment this line to not draw vector field
-    goals[0].curlField.draw();
+    vectorField.draw(); // toggle comment this line to not draw vector field
+    // goals[0].curlField.draw();
     backgroundImage = p5.get();
 
     reset();
@@ -109,9 +115,9 @@ export function sketch(p5: P5Instance) {
     if (p5.mouseX < 0 || p5.mouseX >= p5.width || p5.mouseY < 0 || p5.mouseY >= p5.height) {
       return;
     }
-    // if (mapImage.get(p5.mouseX, p5.mouseY).every(v => v === 255)) {
-    //   return;
-    // }
+    if (mapImage.get(p5.mouseX, p5.mouseY).every(v => v === 255)) {
+      return;
+    }
     particles.push(randomParticle(p5.createVector(p5.mouseX, p5.mouseY)));
   };
 
@@ -156,7 +162,7 @@ export function sketch(p5: P5Instance) {
     p5.line(p5.mouseX, p5.mouseY, p5.mouseX, p5.mouseY-10);
     // put text of mouse coordinates
     p5.fill(255,0,0);
-    p5.text(`(${p5.mouseX},${p5.mouseY})`, p5.mouseX+10, p5.mouseY);
+    p5.text(`(${Math.round(p5.mouseX*10)/10},${Math.round(p5.mouseY*10)/10})`, p5.mouseX+10, p5.mouseY);
 
   };
 }

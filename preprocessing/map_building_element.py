@@ -12,11 +12,12 @@ class MapBuildingElement:
         self.building_name = building_name
 
     def set_curl_field(self, image, fieldL, fieldR):
-        pixels = np.linspace(0, 512, 512, endpoint=False).astype(int)
-        x, y = np.meshgrid(np.arange(image.shape[0]), pixels)
-        coords = np.array([x,y]).T
-        entrances = [np.array([55,90]),np.array([230,135])]
-        toEntrancesVecs = np.array([entrance-coords for entrance in entrances]).transpose(1,2,0,3)*np.array([1,-1]).astype(float)
+        self.curl = np.zeros_like(fieldL)
+        return
+        # pixels = np.linspace(0, 512, 512, endpoint=False).astype(int)
+        x, y = np.meshgrid(np.arange(image.shape[1]), np.arange(image.shape[0]))
+        coords = np.array([y,x]).T
+        toEntrancesVecs = np.array([entrance-coords for entrance in self.entry_points]).transpose(1,2,0,3)*np.array([1,-1]).astype(float)
         magnitudes = np.linalg.norm(toEntrancesVecs, axis=3)[:,:,:,None]
         toEntrancesVecs /= magnitudes
         toEntrancesVecs /= magnitudes
