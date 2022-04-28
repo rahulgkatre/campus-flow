@@ -8,6 +8,7 @@ import {field as map_field, buildings as map_buildings, img_path as map_img_path
 
 import {schedule as particle_schedule} from "assets/schedules/campusdense7";
 
+// create an exportable copy of the drawing instance
 export let p5: P5Instance;
 function setP5(p: P5Instance) {
   p5 = p;
@@ -33,6 +34,7 @@ const fieldDescriptor = map_field;
 const buildings = map_buildings;
 const scheduleJSON: ScheduleJSON = particle_schedule;
 
+// determine the earliest an latest entries in the schedule to use as time jumps during simulation
 const EARLIEST_SPAWN = (() => {
   let temp = scheduleJSON.particles.map(p => {
     return p.particle_schedule[0][1];
@@ -97,18 +99,18 @@ export function sketch(p5: P5Instance) {
   let lastTimeCheck = 0;
   let TIME = 0;
 
+  // these variables are used to track the travel time statistics for analysis
   const travel_times: number[] = [];
   const travel_time_map: Map<string, number[]> = new Map();
   
+  // this is the heatmap for the simulation
   const travel_history: Set<number>[][] = [];
   const TRAVEL_HISTORY_SCALE = 3;
   let maxTravelHistory = 0;
 
   function randomPos() {
     return p5.createVector(p5.random(0, p5.width), p5.random(0, p5.height));
-    // return Vector.random2D().mult(p5.random()*p5.width/2,p5.random()*p5.height/2).add(p5.width/2,p5.height/2);
   }
-
   function randomParticle(pos?: Vector) {
     const startIndex = Math.floor(p5.random(goals.length));
     let endIndex = Math.floor(p5.random(goals.length));
@@ -122,16 +124,20 @@ export function sketch(p5: P5Instance) {
     return p5.frameCount / 60 * 1000;
   }
 
+  /**
+   * reset the simulation
+   * destroy all particles
+   * reset all internal state for each goal (the particles that have reached that goal etc)
+   * reset statistics variables and the heatmap
+   */
   function reset() {
     particles.length = 0;
-    // particles.length = scheduleJSON.num_particles;
     live_particle_ids.clear();
     completed_particle_ids.clear();
     goals.forEach(g => g.reset());
 
     lastTimeCheck = READ_RAW_TIME();
     TIME = EARLIEST_SPAWN - SIM_START_DELAY;
-    // console.log(EARLIEST_SPAWN,TIME);
 
     travel_times.length = 0;
     travel_time_map.clear();
@@ -165,7 +171,6 @@ export function sketch(p5: P5Instance) {
     p5.background(0);
     p5.image(mapImage, 0, 0);
     // vectorField.draw(); // toggle comment this line to not draw vector field
-    // goals[0].curlField.draw();
     goals.forEach(goal => {
       goal.draw();
     });
@@ -174,6 +179,7 @@ export function sketch(p5: P5Instance) {
     reset();
   }
 
+  // take in commands from the react host for this sketch
   p5.updateWithProps = props => {
     if (props.resetCounter !== undefined) {
       if (resetCounter !== props.resetCounter) {
@@ -215,6 +221,7 @@ export function sketch(p5: P5Instance) {
     });
   }
 
+  // assuming the schedule is empty, allow clicks to spawn new particles
   p5.mousePressed = () => {
     if (p5.mouseX < 0 || p5.mouseX >= p5.width || p5.mouseY < 0 || p5.mouseY >= p5.height) {
       return;
@@ -235,6 +242,7 @@ export function sketch(p5: P5Instance) {
     p5.mousePressed();
   }
 
+  // look through the schedule and find new particles to spawn
   function spawnNewParticles() {
     let minSpawnTime = LATEST_SPAWN;
     for (let i = 0; i < scheduleJSON.particles.length; i++) {
@@ -270,12 +278,13 @@ export function sketch(p5: P5Instance) {
       particles.push(newParticle);
       live_particle_ids.add(i);
     }
-    if (live_particle_ids.size === 0 && minSpawnTime - SIM_START_DELAY > TIME) {
+    if (live_particle_ids.size === 0 && minSpawnTime - SIM_START_DELAY > TIME) { // if there are no particles in simulation, jump forward in time such that the user does not have to wait for an empty simulation
       console.log(`TIME JUMP: ${postProcessTimeValue(TIME)[1]} -> ${postProcessTimeValue(minSpawnTime - SIM_START_DELAY)[1]}`);
       TIME = minSpawnTime - SIM_START_DELAY;
     }
   }
 
+  // advance the internal time used by the simulation - this is scaled such that the TIME variable matches the units of the schedules (real time seconds)
   function advanceTime() {
     // console.log(TIME);
     if (paused) {
@@ -291,6 +300,7 @@ export function sketch(p5: P5Instance) {
     lastTimeCheck = now;
   }
 
+  // iterate over the particles and update their heading based on other particles, the vector field, and their goal
   function calculateAndApplyForces() {
     particles.forEach((particle, i) => {
       particle.resetOtherParticleAvoidance();
@@ -301,22 +311,22 @@ export function sketch(p5: P5Instance) {
         particle.avoidOther(otherParticle);
       });
       const reached = particle.evaluateForces(vectorField);
-      if (reached) {
+      if (reached) { // particles that have reached their destination should be destroyed
         particle.markGoalAsReached();
         particles.splice(i, 1);
         live_particle_ids.delete(particle.id);
         const travel_time = TIME - particle.spawnTime;
-        if (particle.confusedCount <= Particle.MAX_CONFUSION_COUNT && travel_time <= 2000) {
+        if (particle.confusedCount <= Particle.MAX_CONFUSION_COUNT && travel_time <= 2000) { // ensure that the particle was not stuck in local minima to avoid putting outliers into the travel time stats
           registerTravelTime(travel_time, particle.startName, particle.goal.name);
-          // periodicAnalysis();
         } else if (travel_time > 2000) {
           console.log(`particle ${particle.id} took a long time: ${postProcessTimeValue(travel_time)[1]}\n\t${particle.startName} -> ${particle.goal.name}`);
         }
-        // console.log(`particle ${particle.id} reached goal ${particle.goal.name} at ${Math.floor(TIME)}`);
       }
     });
   }
 
+  // update the position of each particle based on its computed heading
+  // draw the particles
   function updateAndDrawParticles() {
     particles.forEach((particle) => {
       if (!paused) particle.update();
@@ -324,6 +334,7 @@ export function sketch(p5: P5Instance) {
     });
   }
 
+  // convert a TIME value into a hours:mins:secs string for human readability
   function postProcessTimeValue(time: number): [number,string] {
     const seconds = Math.round(time);
     const minutes = Math.floor(seconds / 60);
@@ -333,6 +344,7 @@ export function sketch(p5: P5Instance) {
     return [time,`${hours}:${minutes_ < 10 ? '0' : ''}${minutes_}:${seconds_ < 10 ? '0' : ''}${seconds_}`];
   }
 
+  // update the travel time stats based on a particles travel time from point to point
   function registerTravelTime(travel_time: number, start: string, goal: string) {
     const key = `${start}->${goal}`;
     const entry = travel_time_map.get(key);
@@ -344,6 +356,7 @@ export function sketch(p5: P5Instance) {
     travel_times.push(travel_time);
   }
 
+  // analyze a list of travel times and get the min,max,avg,stdDev
   function getMinMaxMeanStdTimes(times: number[], print = false) {
     const [min,minStr] = postProcessTimeValue(Math.min(...times));
     const [max,maxStr] = postProcessTimeValue(Math.max(...times));
@@ -355,8 +368,8 @@ export function sketch(p5: P5Instance) {
     return [min,minStr,max,maxStr,mean,meanStr,std,stdStr];
   }
 
+  // analyze the global and building-building travel times and print the results
   function periodicAnalysis() {
-    
     // data analysis on travel times
     getMinMaxMeanStdTimes(travel_times, true);
 
@@ -367,7 +380,8 @@ export function sketch(p5: P5Instance) {
     });
   }
 
-
+  // run analysis on each frame of the simulation
+  // currently just a heatmap calculation
   function perFrameAnalysis() {
     if (p5.frameCount % 30 === 0) {
       return;
@@ -404,14 +418,11 @@ export function sketch(p5: P5Instance) {
 
     updateAndDrawParticles();
 
-    if (p5.frameCount % 3000 === 0) {
-      console.log(`TIME: ${postProcessTimeValue(TIME)[1]}`);
-      // doAnalysisPerFrame();
-    }
     perFrameAnalysis();
 
-    p5.textAlign(p5.LEFT, p5.TOP);
+
     // draw mouse position next to mouse
+    p5.textAlign(p5.LEFT, p5.TOP);
     p5.stroke(255,0,0);
     p5.line(p5.mouseX, p5.mouseY, p5.mouseX+10, p5.mouseY);
     p5.line(p5.mouseX, p5.mouseY, p5.mouseX-10, p5.mouseY);
@@ -421,10 +432,10 @@ export function sketch(p5: P5Instance) {
     p5.fill(255,0,0);
     p5.text(`(${Math.round(p5.mouseX*10)/10},${Math.round(p5.mouseY*10)/10})`, p5.mouseX+10, p5.mouseY);
 
+    // put a timestamp in the top left of the simulation
     const timestamptxt = postProcessTimeValue(TIME)[1];
     p5.fill(0,255,0);
     p5.noStroke();
-    // p5.text(timestamptxt, p5.width-p5.textWidth(timestamptxt)-5, p5.height-15);
     p5.text(timestamptxt, 5,5);
   };
 }

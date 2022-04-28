@@ -1,6 +1,11 @@
 import { Vector } from 'p5';
 import { p5 } from './sketch';
 
+/**
+ * this class represents a vector field
+ * These are parsed from the precomputed field files from the preprocessing stage
+ * There is a unique field for every map and the curl for each building is also a vector field
+ */
 export class VectorField {
   readonly field: Vector[][];
   static readonly repulsion = 1.0;
@@ -18,13 +23,13 @@ export class VectorField {
           this.field.push(fieldStrengths);
         }
       }
-      // console.log(this.field);
     }
   }
   getForce(point: Vector) {
     if (!this.hasField) {
       return p5.createVector(0, 0);
     }
+    // yInd and xInd calculated as such in case field and map are rendered at different scales
     const yInd = Math.floor(point.y * this.field.length / (p5.height+1));
     const xInd = Math.floor(point.x * this.field[0].length / (p5.width+1));
     return this.field[p5.constrain(yInd, 0, this.field.length-1)][p5.constrain(xInd, 0, this.field[0].length-1)].copy();
@@ -56,7 +61,5 @@ export class VectorField {
       }
     }
     avgVector.div(count);
-    // console.log(avgVector);
-    // console.log(maxVector, maxVecLoc);
   }
 }

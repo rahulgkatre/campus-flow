@@ -2,6 +2,10 @@ import { Color, Vector } from 'p5';
 import { p5 } from './sketch';
 import { VectorField } from './VectorField';
 
+/**
+ * This class represents buildings in the simulation. Every building has a set of entrances and an associated color for rendering.
+ * Buildings also store a curl field which is used to decide which direction a particle should turn when trying to get around a building and reach the entrance of this building.
+ */
 export class Goal {
   readonly name: string;
   readonly positions: Vector[];
@@ -64,14 +68,14 @@ export class Goal {
     this.reachedParticleIDs.clear();
   }
   draw() {
-    // p5.beginShape();
+    // find the average position of the building's entrances
     const avgPos = p5.createVector(0, 0);
     for (const pos of this.positions) {
-      // p5.vertex(pos.x, pos.y);
       avgPos.add(pos);
     }
     avgPos.div(this.positions.length);
     
+    // this section of code will find a large white region in which to put the label for the name of this building.
     let labelPos = avgPos.copy();
     let windowSize = 75;
     const negativeHalfWindowVec = p5.createVector(-windowSize/2, -windowSize/2);
@@ -98,10 +102,10 @@ export class Goal {
       tries++;
     }
 
+    // render the building label at the calculated position
     const color = p5.lerpColor(this.color, p5.color(0,0,0), 0.5);
     p5.noStroke();
     p5.fill(color);
-    // p5.endShape(p5.CLOSE);
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.text(this.name, labelPos.x, labelPos.y);
   }
