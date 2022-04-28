@@ -10,11 +10,18 @@ function useEventTrigger(): [number, () => void] {
   return [trigger, onTrigger];
 }
 
+function useToggle(default_state: boolean = false): [boolean, () => void] {
+  const [toggleState, setToggleState] = useState<boolean>(default_state);
+  const toggleFunc = useCallback(() => setToggleState(t=>!t), [setToggleState]);
+  return [toggleState, toggleFunc];
+}
+
 export function Main() {
   const [resetTrigger, triggerReset] = useEventTrigger();
   const [analysisTrigger, triggerAnalysis] = useEventTrigger();
 
-  const [paused, setPaused] = useState<boolean>(false);
+  const [paused, togglePaused] = useToggle();
+  const [heatMap, toggleHeatMap] = useToggle();
 
   return <Page>
     <Card>
@@ -24,15 +31,18 @@ export function Main() {
           <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 mx-2 rounded" onClick={triggerReset}>
             Reset
           </button>
-          <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 mx-2 rounded" onClick={()=>setPaused(p => !p)}>
+          <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 mx-2 rounded" onClick={togglePaused}>
             {paused ? 'Resume' : 'Pause'}
           </button>
           <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 mx-2 rounded text-sm" onClick={triggerAnalysis}>
             Run travel time<br/> Analysis
           </button>
+          <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-3 mx-2 rounded" onClick={toggleHeatMap}>
+            {heatMap ? 'Show map' : 'Show travel\nheatmap'}
+          </button>
         </div>
-        <div className='w-full mx-auto max-w-100'>
-          <ReactP5Wrapper sketch={sketch} resetCounter={resetTrigger} paused={paused} doAnalysisCounter={analysisTrigger} />
+        <div className='w-full mx-auto max-w-3xl'>
+          <ReactP5Wrapper sketch={sketch} resetCounter={resetTrigger} paused={paused} doAnalysisCounter={analysisTrigger} renderHeatmap={heatMap} />
         </div>
       </div>
     </Card>

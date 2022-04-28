@@ -102,7 +102,7 @@ events_classes = {"student": {"housing": 0,
                  #            "other": 0}}
 #50000 for num_people
 #The different parameters for schedule generation
-parameters = {"num_people": 2000, #number of particles in simulation for automatic particle class generation
+parameters = {"num_people": 10000, #number of particles in simulation for automatic particle class generation
               "auto_class": True, #generation of particle classes - True: automatic, False: manual. Note for automatic, percentage of particles in each class may not be exact, depending on the rounding of numbers in the calculation
               "event_number": [1,3], #minimum and maximum number of events a particle can have in a day (min: 1, max: 3)
               "min_len_event": round(50*(end_time - start_time)/1440), #Minimum duration of an event (50 minutes)
@@ -291,7 +291,7 @@ def generate_schedule(people_classes, locations, parameters):
 
 outdir = os.path.join(os.path.dirname(__file__), "../src/assets/schedules/")
 mapname = "campusdense"
-version = 7
+version = 8
 
 if __name__ == '__main__':
 	schedule = generate_schedule(people, objects, parameters)

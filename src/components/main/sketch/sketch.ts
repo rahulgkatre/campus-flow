@@ -60,6 +60,7 @@ export function sketch(p5: P5Instance) {
 
   let resetCounter = 0;
   let doAnalysisCounter = 0;
+  let renderHeatmap = false;
 
   const defaultColors = [
     p5.color(255, 0, 0),
@@ -185,6 +186,11 @@ export function sketch(p5: P5Instance) {
         periodicAnalysis();
       }
       doAnalysisCounter = props.doAnalysisCounter;
+    }
+    if (props.renderHeatmap !== undefined) {
+      if (renderHeatmap !== props.renderHeatmap) {
+        renderHeatmap = props.renderHeatmap;
+      }
     }
     if (props.paused !== undefined) {
       paused = props.paused;
@@ -363,24 +369,32 @@ export function sketch(p5: P5Instance) {
 
 
   function perFrameAnalysis() {
-    if (p5.frameCount % 10 === 0) {
+    if (p5.frameCount % 30 === 0) {
       return;
     }
     // find hot spots where there are a lot of particles <- done by incrementing a global heatmap of particle positions
-    // particles.forEach((particle) => {
-    //   const x = Math.round(p5.constrain(particle.getX()/TRAVEL_HISTORY_SCALE, 0, p5.width/TRAVEL_HISTORY_SCALE-1));
-    //   const y = Math.round(p5.constrain(particle.getY()/TRAVEL_HISTORY_SCALE, 0, p5.height/TRAVEL_HISTORY_SCALE-1));
-    //   travel_history[x][y].add(particle.id);
-    //   if (travel_history[x][y].size > maxTravelHistory) {
-    //     maxTravelHistory = travel_history[x][y].size;
-    //   }
-    // });
+    if (renderHeatmap) {
+      particles.forEach((particle) => {
+        if (particles.length > 100 && p5.random() < (1 - 100/particles.length)) {
+          return; // skip some of the particles when there are many
+        }
+        const x = Math.round(p5.constrain(particle.getX()/TRAVEL_HISTORY_SCALE, 0, p5.width/TRAVEL_HISTORY_SCALE-1));
+        const y = Math.round(p5.constrain(particle.getY()/TRAVEL_HISTORY_SCALE, 0, p5.height/TRAVEL_HISTORY_SCALE-1));
+        travel_history[x][y].add(particle.id);
+        if (travel_history[x][y].size > maxTravelHistory) {
+          maxTravelHistory = travel_history[x][y].size;
+        }
+      });
+    }
   }
 
   p5.draw = () => {
-    p5.background(0);
-    drawBackground();
-    drawHeatMap();
+    if (!renderHeatmap) {
+      drawBackground();
+    } else {
+      p5.background(255);
+      drawHeatMap();
+    }
     advanceTime();
     
     if (!paused) {
