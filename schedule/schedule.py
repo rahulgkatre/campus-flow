@@ -114,7 +114,6 @@ parameters = {"num_people": 10000, #number of particles in simulation for automa
 			  "time_constraint": True, #Do the times of the schedules have constraints? True: yes (constrained schedule times), False: no (no constraints, just random)
 			  "start_syncing": True, #Do the start times of each schedule closely reflect each other? True: yes, False: no
 			  "start_syncing_range": [start_time + round(11*(end_time - start_time)/24), start_time + round(11.25*(end_time - start_time)/24)], #Range of start times when start_syncing is True (11 AM - 12 PM)
-			  "event_syncing": False, #Do the event times of each schedule match each other? True: yes, False: no
 			  "event_clumping": True} #Are the event times of each particle's schedule as close together as possible? True: yes, False: no
 
 #Methods
@@ -156,23 +155,23 @@ def generate_num_events(schedule, num_event_range):
 		for event in range(0,num_events+1):
 			schedule[person]["particle_schedule"].append([])
 
-#Helper method for the generate_events() function
+#Helper method for the generate_events() function, which generates a location based on the probability of event type by particle class
 def helper_generate_events(schedule, locations, event_probability, person):
 	selector = random.random()
 	location = None
 	particle_class = schedule[person]["particle_class"]
 	high = event_probability[particle_class]["housing"]
-	if selector <= high:
+	if selector <= high: #location is housing
 		location = random.choice(locations[0])
 	low = high
 	high += event_probability[particle_class]["borders"]
-	if selector > low and selector <= high:
+	if selector > low and selector <= high: #location is a border of the map (off-campus location)
 		location = random.choice(locations[1])
 	low = high
 	high += event_probability[particle_class]["buildings"]
-	if selector > low and selector <= high:
+	if selector > low and selector <= high: #location is a building
 		location = random.choice(locations[2])
-	if selector > high:
+	if selector > high: #location does not fit into any of the above categories
 		location = random.choice(locations[3])
 	return location
 
@@ -181,20 +180,22 @@ def generate_events(schedule, locations, parameters):
 	campus_probability = parameters["campus_housing"]
 	event_probability = parameters["events_classes"]
 	for person in range(0, len(schedule)):
+		#Generate the start and end location for each particle
 		event_list = schedule[person]["particle_schedule"]
 		campus = random.random()
 		location = None
-		if campus <= campus_probability[schedule[person]["particle_class"]]:
+		if campus <= campus_probability[schedule[person]["particle_class"]]: #on-campus (housing)
 			location = random.choice(locations[0])
-		else:
+		else: #off-campus (border of map)
 			location = random.choice(locations[1])
 		event_list[0].append(location)
-		if len(event_list) == 2:
+		#Generate the location for each event of each particle's schedule
+		if len(event_list) == 2: #Particle has 1 event in schedule
 			location = helper_generate_events(schedule, locations, event_probability, person)
 			while location == event_list[0][0]:
 				location = helper_generate_events(schedule, locations, event_probability, person)
 			event_list[1].append(location)
-		else:
+		else: #Particle has multiple events in schedule
 			for event in range(1, len(event_list)):
 				location = helper_generate_events(schedule, locations, event_probability, person)
 				while event >= 1 and event < len(event_list)-1 and location == event_list[event-1][0]:
@@ -223,6 +224,7 @@ def generate_times(schedule, parameters):
 				else:
 					if parameters["event_clumping"]:
 						for person in range(0, len(schedule)):
+							#Start times are synced and events are clumped together on schedule (used to create high-volume particle movements)
 							event_list = schedule[person]["particle_schedule"]
 							begin_time = random.randint(parameters["start_syncing_range"][0], parameters["start_syncing_range"][1])
 							event_list[0].append(begin_time)
@@ -231,15 +233,9 @@ def generate_times(schedule, parameters):
 								if begin_time < event_list[event-1][1]+max_walk_time+min_length_event:
 									print("Times are too close together.")
 								event_list[event].append(begin_time)
-					else:
-						pass
-			else:
-				if parameters["event_clumping"]:
-					pass
-				else:
-					pass
 		else:
 			for person in range(0, len(schedule)):
+				#Times are randomly generated (default)
 				event_list = schedule[person]["particle_schedule"]
 				num_events = len(event_list)-1
 				schedule_length = num_events*min_length_event + (num_events-1)*max_walk_time
@@ -289,13 +285,14 @@ def generate_schedule(people_classes, locations, parameters):
 #               ...                                                         ]}
 #Note: Each schedule represents 1 day in the simulation
 
+#Used to set the file name and path for the JSON object
 outdir = os.path.join(os.path.dirname(__file__), "../src/assets/schedules/")
 mapname = "campusdense"
 version = 8
 
+#Create the JSON object and generate the schedule collection
 if __name__ == '__main__':
 	schedule = generate_schedule(people, objects, parameters)
-	# print(schedule)
 	if schedule == -1:
 		print("Due to previous error, the schedule cannot be generated. Please try again.")
 	else:
