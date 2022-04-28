@@ -31,6 +31,20 @@ export class Goal {
     }
     return this.positions[minIndex].copy();
   }
+  closestPositionToGoal(other: Goal) {
+    let minDist = Number.MAX_VALUE;
+    let minIndex = 0;
+    for (let i = 0; i < this.positions.length; i++) {
+      for (let j = 0; j < other.positions.length; j++) {
+        const dist = this.positions[i].dist(other.positions[j]);
+        if (dist < minDist) {
+          minDist = dist;
+          minIndex = i;
+        }
+      }
+    }
+    return this.positions[minIndex].copy();
+  }
   randomPosition() {
     return p5.random(this.positions).copy();
   }
@@ -85,9 +99,8 @@ export class Goal {
     }
 
     const color = p5.lerpColor(this.color, p5.color(0,0,0), 0.5);
-    p5.stroke(color);
-    p5.strokeWeight(1);
-    p5.noFill();
+    p5.noStroke();
+    p5.fill(color);
     // p5.endShape(p5.CLOSE);
     p5.textAlign(p5.CENTER, p5.CENTER);
     p5.text(this.name, labelPos.x, labelPos.y);

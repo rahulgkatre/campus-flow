@@ -9,6 +9,7 @@ export class Particle {
   static readonly MOVING_AVG_SIZE = 20;
   static readonly GOAL_REACHED_DIST = 10;
   static readonly MAX_CONFUSION_COUNT = 3;
+  static readonly MIN_POS_STDDEV = 2;
 
   readonly id: number;
   readonly spawnTime: number;
@@ -20,6 +21,8 @@ export class Particle {
   private goalPos: Vector;
   private readonly heading: Vector;
 
+  private lifespan: number;
+
   private avgOtherParticle: Vector;
   private otherParticleCount: number;
 
@@ -27,8 +30,10 @@ export class Particle {
   private movingAvgHeadings: Vector[];
   private movingAvgIndex: number;
   private framesSameGoal: number;
+  private timesGoalChanged: number;
 
   private curled: boolean;
+  private curlDir: number;
   confusedCount: number;
 
   constructor(id: number, spawnTime: number, start: Goal | Vector, goal: Goal) {
@@ -37,7 +42,7 @@ export class Particle {
     if (start instanceof Goal) {
       this.start = start;
       this.startName = start.name;
-      this.startPos = start.closestPosition(goal.randomPosition());
+      this.startPos = start.closestPositionToGoal(goal);
     } else {
       this.start = null;
       this.startName = 'spawned';
@@ -47,13 +52,20 @@ export class Particle {
     this.position = this.startPos.copy();
     this.goalPos = goal.closestPosition(this.position);
     this.heading = Vector.sub(this.goalPos, this.position).normalize();
+
+    this.lifespan = 0;
+
     this.avgOtherParticle = new Vector(0, 0);
     this.otherParticleCount = 0;
     this.movingAvgPositions = [];
     this.movingAvgHeadings = [];
     this.movingAvgIndex = 0;
     this.framesSameGoal = 0;
+    this.timesGoalChanged = 0;
+    
     this.curled = false;
+    this.curlDir = Math.PI/2 * Math.sign(p5.random()-0.5);
+
     this.confusedCount = 0;
     this.resetMovingAvgPositions();
     this.resetMovingAvgHeadings();
@@ -62,8 +74,9 @@ export class Particle {
     this.movingAvgPositions = Array(Particle.MOVING_AVG_SIZE);
     this.framesSameGoal = 0;
     for (let i = 0; i < Particle.MOVING_AVG_SIZE; i++) {
-      this.movingAvgPositions[i] = this.position.copy();
+      this.movingAvgPositions[i] = this.position.copy().add(this.heading.copy().mult(i));
     }
+    this.timesGoalChanged++;
   }
   resetMovingAvgHeadings() {
     this.movingAvgHeadings = Array(Particle.MOVING_AVG_SIZE);
@@ -75,12 +88,18 @@ export class Particle {
     // this.goalPos = this.goal.closestPosition(this.position);
     let distToGoal = this.position.dist(this.goalPos);
     if (distToGoal < Particle.GOAL_REACHED_DIST*20) {
-      this.goalPos = this.goal.closestPosition(this.position);
-      this.resetMovingAvgPositions();
-      distToGoal = this.position.dist(this.goalPos);
+      const tmp = this.goal.closestPosition(this.position);
+      if (tmp !== this.goalPos) {
+        this.goalPos = tmp;
+        this.resetMovingAvgPositions();
+        distToGoal = this.position.dist(this.goalPos);
+      }
     }
-    if (distToGoal <= Particle.GOAL_REACHED_DIST || this.confusedCount > Particle.MAX_CONFUSION_COUNT) {
+    if (distToGoal <= Particle.GOAL_REACHED_DIST || this.confusedCount > Particle.MAX_CONFUSION_COUNT || this.position.x < 0 || this.position.y < 0 || this.position.x > p5.width || this.position.y > p5.height) {
       this.heading.mult(0);
+      if (distToGoal > Particle.GOAL_REACHED_DIST) {
+        this.confusedCount = Particle.MAX_CONFUSION_COUNT + 1;
+      }
       return true;
     }
     let turnResistance = Particle.RESISTANCE_TO_TURN;
@@ -102,9 +121,15 @@ export class Particle {
     let fieldEffect = distToGoal > 100 ? 2 : (distToGoal > Particle.GOAL_REACHED_DIST*3 ? 1 : 0.5);
 
     const curlForce = this.goal.curlField.getForce(this.position);
+
+    const angleClsoeTo180By = Math.abs(((toGoalHeading.angleBetween(fieldForceAtHeading) + Math.PI*2) % (Math.PI*2)) - Math.PI);
+    if (angleClsoeTo180By < Math.PI/12) {
+      curlForce.set(toGoalHeading.copy().rotate(this.curlDir).setMag(1));
+    }
+
     const curlMag = curlForce.mag();
     let curlEffect = 0.0;
-    if (curlMag >= 0.2 && distToGoal < Particle.GOAL_REACHED_DIST*20) {
+    if (curlMag >= 0.2 && this.confusedCount > -1) {
       goalEffect *= 0.05;
       fieldEffect *= 0.1;
       curlEffect = 0.5;
@@ -141,11 +166,13 @@ export class Particle {
     }
   }
   update() {
+    this.lifespan++;
     // if (this.movingAvgGoalDists.reduce((a,b) => a + b) / Particle.MOVING_AVG_SIZE < this.position.dist(this.goalPos)) {
     //   this.goalPos = this.goal.closestPosition(this.position);
     // }
 
-    // const averagePos = this.movingAvgPositions.reduce((a,b) => Vector.add(a,b)).div(Particle.MOVING_AVG_SIZE);
+    const averagePos = this.movingAvgPositions.reduce((a,b) => Vector.add(a,b)).div(Particle.MOVING_AVG_SIZE);
+    const stdDevPos = Math.sqrt(this.movingAvgPositions.map(pos => Vector.sub(pos,averagePos).magSq()).reduce((a,b) => a + b) / Particle.MOVING_AVG_SIZE);
     // const headingsFromAvgPos = this.movingAvgPositions.map(p => Vector.sub(p, averagePos).heading());
     // const headingAngles = this.movingAvgHeadings.map(h => {
     //   const angle = h.heading();
@@ -155,12 +182,20 @@ export class Particle {
     const stdDevHeading = Math.sqrt(this.movingAvgHeadings.map(h => Math.pow(h.angleBetween(avgHeading), 2)).reduce((a,b) => a + b) / Particle.MOVING_AVG_SIZE);
     // const avgDistFromAvgPos = this.movingAvgPosition.map(p => p.dist(averagePos)).reduce((a,b) => a + b) / Particle.MOVING_AVG_SIZE;
     // console.log(stdDevHeading);
-    if (this.framesSameGoal > Particle.MOVING_AVG_SIZE*3 && stdDevHeading >= p5.PI/3 && this.position.dist(this.goalPos) > Particle.GOAL_REACHED_DIST*3) { // try to move 0.5 units per frame
-      // console.log('std dev of heading: ' + stdDevHeading);
+    // if (this.goal.name === 'VanLeer' && stdDevPos < 4.5 && this.position.x > 560 && this.position.x < 590 && this.position.y > 180 && this.position.y < 220) {
+    //   console.log(stdDevPos);
+    //   console.log(this.framesSameGoal, Particle.MOVING_AVG_SIZE*3);
+    // }
+    if ((this.framesSameGoal > Particle.MOVING_AVG_SIZE*3 && stdDevHeading >= p5.PI/3 && this.position.dist(this.goalPos) > Particle.GOAL_REACHED_DIST*3) || (this.lifespan > Particle.MOVING_AVG_SIZE*3 && (this.framesSameGoal > Particle.MOVING_AVG_SIZE*3 || this.timesGoalChanged > 20) && stdDevPos <= Particle.MIN_POS_STDDEV)) { // try to move 0.5 units per frame
       // console.log('avg: ' + avgHeading);
-      this.goalPos = this.goal.closestPosition(this.position, [this.goalPos]);
-      this.resetMovingAvgPositions();
-      this.confusedCount++;
+      if (stdDevPos > Particle.MIN_POS_STDDEV) {
+        this.goalPos = this.goal.closestPosition(this.position, [this.goalPos]);
+        this.resetMovingAvgPositions();
+      } else {
+        // console.log(this.startName, '->', this.goal.name, '\n\t', stdDevPos*100, '\n\t', averagePos.toString());
+        // console.log('\n\t', this.movingAvgPositions.map(String).join('\n\t'));
+        this.confusedCount++;
+      }
       // p5.noLoop();
     }
 
@@ -177,28 +212,21 @@ export class Particle {
     p5.fill(this.goal.color);
     p5.circle(this.position.x, this.position.y, 5);
     p5.stroke(this.goal.color);
+    
+    // draw an arrow from position to lookingAt
     // const lookingAt = Vector.add(this.position, this.heading.mult(7));
-    // // draw an arrow from position to lookingAt
     // p5.line(this.position.x, this.position.y, lookingAt.x, lookingAt.y);
-    // // p5.strokeWeight(2);
-    // // p5.line(lookingAt.x, lookingAt.y, lookingAt.x + (lookingAt.x - this.position.x) * 0.5, lookingAt.y + (lookingAt.y - this.position.y) * 0.5);
-    // // p5.line(lookingAt.x, lookingAt.y, lookingAt.x - (lookingAt.x - this.position.x) * 0.5, lookingAt.y - (lookingAt.y - this.position.y) * 0.5);
-    // // p5.strokeWeight(1);
-    // if (this.position.dist(this.goalPos) <= Particle.GOAL_REACHED_DIST) {
-    //   p5.stroke([0,255,0]);
-    // }
-    // p5.line(this.position.x, this.position.y, this.goalPos.x, this.goalPos.y);
   }
 
   markGoalAsReached() {
     this.goal.markReachedByAt(this.id, this.spawnTime);
   }
 
-  getXint() {
-    return Math.floor(this.position.x);
+  getX() {
+    return this.position.x;
   }
-  getYint() {
-    return Math.floor(this.position.y);
+  getY() {
+    return this.position.y;
   }
 
 }

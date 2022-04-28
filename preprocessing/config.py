@@ -25,7 +25,7 @@ campus_buildings = [
     MapBuildingElement('Student Center', [np.array([51, 636]), np.array([51, 849]), np.array([290, 809]), np.array([272, 938])]),
     MapBuildingElement('Skiles', [np.array([727, 953]), np.array([776, 813]), np.array([916, 813])]),
     MapBuildingElement('CulcLibrary', [np.array([776, 718]), np.array([972, 718]), np.array([972, 569]), np.array([748, 368])]),
-    MapBuildingElement('VanLeer', [np.array([521, 198]), np.array([702, 174])]),
+    MapBuildingElement('VanLeer', [np.array([521, 198]), np.array([550, 198]), np.array([702, 174])]),
     MapBuildingElement('IndustrialDesign', [np.array([852, 164]), np.array([744, 63])]),
     MapBuildingElement('BungerHenry', [np.array([301, 106]), np.array([368, 201]), np.array([248, 315]), np.array([333, 315])]),
     MapBuildingElement('NorthExit', [np.array([41, 2]), np.array([400, 2]), np.array([734, 0])]),

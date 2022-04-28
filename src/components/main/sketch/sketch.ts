@@ -4,9 +4,9 @@ import { Particle } from "./Particle";
 import { Goal } from "./Goal";
 import { VectorField } from "./VectorField";
 
-import {field as map_field, buildings as map_buildings, img_path as map_img_path} from "assets/maps/hallway/map";
+import {field as map_field, buildings as map_buildings, img_path as map_img_path} from "assets/maps/campus/map";
 
-import {schedule as particle_schedule} from "assets/schedules/empty";
+import {schedule as particle_schedule} from "assets/schedules/campusdense7";
 
 export let p5: P5Instance;
 function setP5(p: P5Instance) {
@@ -59,6 +59,7 @@ export function sketch(p5: P5Instance) {
   const SIM_START_DELAY = 500/SIMULATION_SPEED_FACTOR;
 
   let resetCounter = 0;
+  let doAnalysisCounter = 0;
 
   const defaultColors = [
     p5.color(255, 0, 0),
@@ -98,7 +99,8 @@ export function sketch(p5: P5Instance) {
   const travel_times: number[] = [];
   const travel_time_map: Map<string, number[]> = new Map();
   
-  const travel_history: number[][] = [];
+  const travel_history: Set<number>[][] = [];
+  const TRAVEL_HISTORY_SCALE = 3;
   let maxTravelHistory = 0;
 
   function randomPos() {
@@ -134,10 +136,10 @@ export function sketch(p5: P5Instance) {
     travel_time_map.clear();
 
     travel_history.length = 0;
-    for (let x = 0; x < p5.width; x++) {
+    for (let x = 0; x < p5.width / TRAVEL_HISTORY_SCALE; x++) {
       travel_history.push([]);
-      for (let y = 0; y < p5.height; y++) {
-        travel_history[x].push(0);
+      for (let y = 0; y < p5.height / TRAVEL_HISTORY_SCALE; y++) {
+        travel_history[x].push(new Set());
       }
     }
     maxTravelHistory = 0;
@@ -178,6 +180,12 @@ export function sketch(p5: P5Instance) {
       }
       resetCounter = props.resetCounter;
     }
+    if (props.doAnalysisCounter !== undefined) {
+      if (doAnalysisCounter !== props.doAnalysisCounter) {
+        periodicAnalysis();
+      }
+      doAnalysisCounter = props.doAnalysisCounter;
+    }
     if (props.paused !== undefined) {
       paused = props.paused;
       p5.loop();
@@ -191,11 +199,11 @@ export function sketch(p5: P5Instance) {
 
   function drawHeatMap() {
     p5.noStroke();
-    p5.fill(255, 0, 0, 0.1);
     travel_history.forEach((row, x) => {
       row.forEach((val, y) => {
-        if (val > 0) {
-          p5.rect(x, y, 1, 1);
+        if (val.size > 0) {
+          p5.fill(255, 0, 0, val.size / maxTravelHistory * 255);
+          p5.circle(x*TRAVEL_HISTORY_SCALE, y*TRAVEL_HISTORY_SCALE, TRAVEL_HISTORY_SCALE);
         }
       });
     });
@@ -257,7 +265,7 @@ export function sketch(p5: P5Instance) {
       live_particle_ids.add(i);
     }
     if (live_particle_ids.size === 0 && minSpawnTime - SIM_START_DELAY > TIME) {
-      console.log(`TIME JUMP: ${TIME} -> ${minSpawnTime - SIM_START_DELAY}`);
+      console.log(`TIME JUMP: ${postProcessTimeValue(TIME)[1]} -> ${postProcessTimeValue(minSpawnTime - SIM_START_DELAY)[1]}`);
       TIME = minSpawnTime - SIM_START_DELAY;
     }
   }
@@ -294,8 +302,8 @@ export function sketch(p5: P5Instance) {
         const travel_time = TIME - particle.spawnTime;
         if (particle.confusedCount <= Particle.MAX_CONFUSION_COUNT && travel_time <= 2000) {
           registerTravelTime(travel_time, particle.startName, particle.goal.name);
-          periodicAnalysis();
-        } else {
+          // periodicAnalysis();
+        } else if (travel_time > 2000) {
           console.log(`particle ${particle.id} took a long time: ${postProcessTimeValue(travel_time)[1]}\n\t${particle.startName} -> ${particle.goal.name}`);
         }
         // console.log(`particle ${particle.id} reached goal ${particle.goal.name} at ${Math.floor(TIME)}`);
@@ -314,7 +322,9 @@ export function sketch(p5: P5Instance) {
     const seconds = Math.round(time);
     const minutes = Math.floor(seconds / 60);
     const seconds_ = seconds % 60;
-    return [time,`${minutes}:${seconds_ < 10 ? "0" : ""}${seconds_}`];
+    const hours = Math.floor(minutes / 60);
+    const minutes_ = minutes % 60;
+    return [time,`${hours}:${minutes_ < 10 ? '0' : ''}${minutes_}:${seconds_ < 10 ? '0' : ''}${seconds_}`];
   }
 
   function registerTravelTime(travel_time: number, start: string, goal: string) {
@@ -334,13 +344,12 @@ export function sketch(p5: P5Instance) {
     const [mean,meanStr] = postProcessTimeValue(times.reduce((a, b) => a + b, 0) / times.length);
     const [std,stdStr] = postProcessTimeValue(Math.sqrt(times.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / times.length));
     if (print) {
-      // console.log(`min: ${minStr}, max: ${maxStr}, mean: ${meanStr}, std: ${stdStr}`);
+      console.log(`min: ${minStr}, max: ${maxStr}, mean: ${meanStr}, std: ${stdStr}`);
     }
     return [min,minStr,max,maxStr,mean,meanStr,std,stdStr];
   }
 
   function periodicAnalysis() {
-    // find hot spots where there are a lot of particles
     
     // data analysis on travel times
     getMinMaxMeanStdTimes(travel_times, true);
@@ -348,23 +357,28 @@ export function sketch(p5: P5Instance) {
     travel_time_map.forEach((times, key) => {
       const [start,goal] = key.split("->");
       const [,minStr,,maxStr,,meanStr,,stdStr] = getMinMaxMeanStdTimes(times, false);
-      // console.log(`\t${start}->${goal}: [${minStr},  ${meanStr} ,${maxStr}] :: ${stdStr}`);
+      console.log(`\t${start}->${goal}: [${minStr},  ${meanStr} ,${maxStr}] :: ${stdStr}`);
     });
-
-    // console.log(travel_times);
   }
 
 
   function perFrameAnalysis() {
-    particles.forEach((particle) => {
-      travel_history[particle.getXint()][particle.getYint()] += 1;
-      if (travel_history[particle.getXint()][particle.getYint()] > maxTravelHistory) {
-        maxTravelHistory = travel_history[particle.getXint()][particle.getYint()];
-      }
-    });
+    if (p5.frameCount % 10 === 0) {
+      return;
+    }
+    // find hot spots where there are a lot of particles <- done by incrementing a global heatmap of particle positions
+    // particles.forEach((particle) => {
+    //   const x = Math.round(p5.constrain(particle.getX()/TRAVEL_HISTORY_SCALE, 0, p5.width/TRAVEL_HISTORY_SCALE-1));
+    //   const y = Math.round(p5.constrain(particle.getY()/TRAVEL_HISTORY_SCALE, 0, p5.height/TRAVEL_HISTORY_SCALE-1));
+    //   travel_history[x][y].add(particle.id);
+    //   if (travel_history[x][y].size > maxTravelHistory) {
+    //     maxTravelHistory = travel_history[x][y].size;
+    //   }
+    // });
   }
 
   p5.draw = () => {
+    p5.background(0);
     drawBackground();
     drawHeatMap();
     advanceTime();
@@ -377,11 +391,12 @@ export function sketch(p5: P5Instance) {
     updateAndDrawParticles();
 
     if (p5.frameCount % 3000 === 0) {
-      console.log(`TIME: ${postProcessTimeValue(TIME).join(" - ")}`);
+      console.log(`TIME: ${postProcessTimeValue(TIME)[1]}`);
       // doAnalysisPerFrame();
     }
     perFrameAnalysis();
 
+    p5.textAlign(p5.LEFT, p5.TOP);
     // draw mouse position next to mouse
     p5.stroke(255,0,0);
     p5.line(p5.mouseX, p5.mouseY, p5.mouseX+10, p5.mouseY);
@@ -392,5 +407,10 @@ export function sketch(p5: P5Instance) {
     p5.fill(255,0,0);
     p5.text(`(${Math.round(p5.mouseX*10)/10},${Math.round(p5.mouseY*10)/10})`, p5.mouseX+10, p5.mouseY);
 
+    const timestamptxt = postProcessTimeValue(TIME)[1];
+    p5.fill(0,255,0);
+    p5.noStroke();
+    // p5.text(timestamptxt, p5.width-p5.textWidth(timestamptxt)-5, p5.height-15);
+    p5.text(timestamptxt, 5,5);
   };
 }
